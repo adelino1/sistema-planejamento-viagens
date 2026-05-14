@@ -1,0 +1,30 @@
+<section class="home">
+  <header class="home__header">
+    <h1>Sistema de Planejamento de Viagens</h1>
+    <p class="home__subtitle">Fundações e autenticação — API REST + Angular modular</p>
+    <nav class="home__nav">
+      <a routerLink="/auth/login">Login</a>
+      <a routerLink="/auth/register">Registo</a>
+      <a routerLink="/trips">Viagens</a>
+      <a routerLink="/dashboard">Painel</a>
+      <a routerLink="/admin">Admin</a>
+    </nav>
+  </header>
+
+  <article class="card" *ngIf="loading">A carregar estado da API…</article>
+
+  <article class="card card--error" *ngIf="error && !loading">
+    <h2>Erro</h2>
+    <p>{{ error }}</p>
+  </article>
+
+  <article class="card" *ngIf="payload && !loading">
+    <h2>Ligação OK</h2>
+    <p><strong>Mensagem:</strong> {{ payload.message }}</p>
+    <ul>
+      <li><strong>API:</strong> {{ payload.data.api }}</li>
+      <li><strong>Base de dados:</strong> {{ payload.data.database }}</li>
+      <li><strong>Timestamp:</strong> {{ payload.data.timestamp }}</li>
+    </ul>
+  </article>
+</section>

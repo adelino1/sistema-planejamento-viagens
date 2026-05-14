@@ -1,0 +1,23 @@
+<div class="layout" [class.layout--menu-open]="menuOpen">
+  <aside class="layout__sidebar" (click)="closeMenu()">
+    <div class="layout__brand">TravelPlan</div>
+    <nav class="layout__nav">
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">Painel</a>
+      <a routerLink="/trips" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Viagens</a>
+      <a *ngIf="user?.role === 'admin'" routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+    </nav>
+  </aside>
+  <div class="layout__content">
+    <header class="layout__topbar">
+      <button type="button" class="layout__burger" (click)="toggleMenu(); $event.stopPropagation()" aria-label="Menu">☰</button>
+      <nav class="layout__toplinks">
+        <a routerLink="/home">Início público</a>
+        <span class="layout__user" *ngIf="user">{{ user.full_name }}</span>
+        <button type="button" class="layout__logout" (click)="logout()">Sair</button>
+      </nav>
+    </header>
+    <main class="layout__outlet" (click)="closeMenu()">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

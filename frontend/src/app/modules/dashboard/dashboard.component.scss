@@ -1,0 +1,34 @@
+.dash {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1.25rem;
+}
+
+.dash__muted {
+  color: var(--muted);
+}
+
+.dash__error {
+  color: #b91c1c;
+}
+
+.dash__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.dash__actions a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.dash__actions button {
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}

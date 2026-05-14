@@ -1,0 +1,25 @@
+<section class="auth">
+  <h1>Iniciar sessão</h1>
+  <p class="auth__hint">Aceda ao painel de planeamento de viagens.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="auth__form">
+    <label>
+      <span>Email</span>
+      <input type="email" formControlName="email" autocomplete="username" />
+    </label>
+    <label>
+      <span>Palavra-passe</span>
+      <input type="password" formControlName="password" autocomplete="current-password" />
+    </label>
+
+    <p class="auth__error" *ngIf="error">{{ error }}</p>
+
+    <button type="submit" [disabled]="form.invalid">Entrar</button>
+  </form>
+
+  <nav class="auth__links">
+    <a routerLink="/auth/register">Criar conta</a>
+    <a routerLink="/auth/forgot-password">Esqueci a palavra-passe</a>
+    <a routerLink="/home">Voltar ao início</a>
+  </nav>
+</section>

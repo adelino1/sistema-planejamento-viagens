@@ -1,0 +1,147 @@
+.detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.detail__back {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.detail__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail__meta,
+.detail__budget {
+  color: var(--muted);
+  margin: 0.25rem 0;
+}
+
+.detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.detail__actions a {
+  color: var(--accent);
+}
+
+.detail__actions .danger {
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.detail__section h2 {
+  margin-top: 0;
+}
+
+.detail__dayform {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.detail__dayform label span {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.detail__dayform input {
+  padding: 0.45rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.detail__dayform button {
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.day {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--surface);
+}
+
+.day__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day__head h3 {
+  margin: 0;
+}
+
+.link {
+  border: none;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.day__acts {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+}
+
+.day__acts li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail__actform {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.detail__actform input {
+  padding: 0.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.detail__actform button {
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.detail__err {
+  color: #b91c1c;
+  padding: 1rem;
+}

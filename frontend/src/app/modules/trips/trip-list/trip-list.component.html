@@ -1,0 +1,23 @@
+<section class="trips">
+  <header class="trips__head">
+    <h1>As minhas viagens</h1>
+    <button type="button" class="trips__new" (click)="goNew()">Nova viagem</button>
+  </header>
+
+  <p *ngIf="loading">A carregar…</p>
+  <p *ngIf="error" class="trips__err">{{ error }}</p>
+
+  <div class="trips__grid" *ngIf="!loading && !error">
+    <article class="card" *ngFor="let t of trips">
+      <h2><a [routerLink]="['/trips', t.id]">{{ t.name }}</a></h2>
+      <p class="card__meta">{{ t.city }}, {{ t.country }}</p>
+      <p class="card__dates">{{ t.start_date }} → {{ t.end_date }}</p>
+      <p class="card__status">{{ t.status }}</p>
+      <nav class="card__actions">
+        <a [routerLink]="['/trips', t.id]">Detalhe</a>
+        <a [routerLink]="['/trips', t.id, 'edit']">Editar</a>
+      </nav>
+    </article>
+    <p *ngIf="trips.length === 0" class="trips__empty">Ainda não tem viagens. Crie a primeira.</p>
+  </div>
+</section>

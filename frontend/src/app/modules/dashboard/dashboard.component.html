@@ -1,0 +1,13 @@
+<section class="dash">
+  <header>
+    <h1>Painel</h1>
+    <p *ngIf="user">Sessão ativa: <strong>{{ user.full_name }}</strong> ({{ user.email }}) — papel: {{ user.role }}</p>
+    <p *ngIf="error" class="dash__error">{{ error }}</p>
+  </header>
+
+  <p class="dash__muted">Resumo e estatísticas completas serão adicionados na Fase 9. Utilize a sidebar para gerir viagens.</p>
+
+  <nav class="dash__actions">
+    <a routerLink="/trips">Ir para viagens</a>
+  </nav>
+</section>

@@ -1,0 +1,53 @@
+<section class="detail" *ngIf="!loading && trip">
+  <header class="detail__head">
+    <div>
+      <a routerLink="/trips" class="detail__back">← Viagens</a>
+      <h1>{{ trip.name }}</h1>
+      <p class="detail__meta">{{ trip.city }}, {{ trip.country }} · {{ trip.start_date }} → {{ trip.end_date }}</p>
+      <p class="detail__budget">Orçamento: {{ trip.budget_amount }} {{ trip.budget_currency }} · {{ trip.status }}</p>
+      <p *ngIf="trip.description">{{ trip.description }}</p>
+    </div>
+    <nav class="detail__actions">
+      <a [routerLink]="['/trips', trip.id, 'edit']">Editar viagem</a>
+      <button type="button" class="danger" (click)="deleteTrip()">Eliminar viagem</button>
+    </nav>
+  </header>
+
+  <section class="detail__section">
+    <h2>Itinerário</h2>
+    <form [formGroup]="dayForm" (ngSubmit)="addDay()" class="detail__dayform">
+      <label><span>Novo dia (data)</span><input type="date" formControlName="day_date" /></label>
+      <label><span>Notas</span><input type="text" formControlName="notes" /></label>
+      <button type="submit" [disabled]="dayForm.invalid">Adicionar dia</button>
+    </form>
+
+    <article class="day" *ngFor="let block of itinerary">
+      <header class="day__head">
+        <h3>{{ block.day.day_date }}</h3>
+        <button type="button" class="link" (click)="removeDay(block.day)">Remover dia</button>
+      </header>
+      <p *ngIf="block.day.notes" class="day__notes">{{ block.day.notes }}</p>
+
+      <ul class="day__acts" *ngIf="block.activities.length">
+        <li *ngFor="let a of block.activities">
+          <strong>{{ a.title }}</strong>
+          <span *ngIf="a.location_name"> · {{ a.location_name }}</span>
+          <span *ngIf="a.start_time"> · {{ a.start_time }}</span>
+          <button type="button" class="link" (click)="removeActivity(a)">✕</button>
+        </li>
+      </ul>
+
+      <ng-container *ngIf="activityForms[block.day.id] as g">
+        <form [formGroup]="g" (ngSubmit)="addActivity(block.day)" class="detail__actform">
+          <input type="text" placeholder="Atividade" formControlName="title" />
+          <input type="text" placeholder="Local" formControlName="location_name" />
+          <input type="time" formControlName="start_time" />
+          <button type="submit" [disabled]="g.invalid">+ Atividade</button>
+        </form>
+      </ng-container>
+    </article>
+  </section>
+</section>
+
+<p *ngIf="loading">A carregar…</p>
+<p *ngIf="error" class="detail__err">{{ error }}</p>

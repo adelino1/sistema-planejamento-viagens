@@ -1,0 +1,13 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+/**
+ * Componentes, diretivas e pipes reutilizáveis entre módulos de funcionalidade.
+ */
+@NgModule({
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  exports: [CommonModule, ReactiveFormsModule, RouterModule],
+})
+export class SharedModule {}
