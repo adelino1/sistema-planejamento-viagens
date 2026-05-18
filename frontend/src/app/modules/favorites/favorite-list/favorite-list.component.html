@@ -1,0 +1,51 @@
+<div class="favorite-list">
+  <div class="favorite-list__header">
+    <h2>Favoritos</h2>
+    <button class="btn-primary" (click)="toggleForm()" *ngIf="!showForm">
+      + Adicionar Favorito
+    </button>
+  </div>
+
+  <!-- Form -->
+  <app-favorite-form
+    *ngIf="showForm"
+    [favorite]="editingFavorite"
+    [loading]="submitting"
+    (submit)="onSubmitFavorite($event)"
+    (cancel)="onCancelFavorite()"
+  ></app-favorite-form>
+
+  <!-- Loading State -->
+  <div class="favorite-list__loading" *ngIf="loading">
+    <div class="skeleton" style="height: 100px; margin-bottom: 1rem;"></div>
+    <div class="skeleton" style="height: 100px; margin-bottom: 1rem;"></div>
+    <div class="skeleton" style="height: 100px;"></div>
+  </div>
+
+  <!-- Error State -->
+  <div class="favorite-list__error" *ngIf="error">
+    {{ error }}
+    <button class="btn-ghost" (click)="loadFavorites()">Tentar novamente</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="favorite-list__empty" *ngIf="!loading && !error && favorites.length === 0">
+    <p>Sem favoritos guardados.</p>
+    <button class="btn-primary" (click)="toggleForm()">Adicionar Primeiro Favorito</button>
+  </div>
+
+  <!-- Favorites List -->
+  <div class="favorite-list__items" *ngIf="!loading && !error && favorites.length > 0">
+    <div class="favorite-group" *ngFor="let group of groupedFavorites | keyvalue">
+      <h3 class="favorite-group__title">
+        {{ group.key === 'destination' ? 'Destinos' : 'Locais' }}
+      </h3>
+      <app-favorite-card
+        *ngFor="let favorite of group.value"
+        [favorite]="favorite"
+        (edit)="onEditFavorite($event)"
+        (delete)="onDeleteFavorite($event)"
+      ></app-favorite-card>
+    </div>
+  </div>
+</div>

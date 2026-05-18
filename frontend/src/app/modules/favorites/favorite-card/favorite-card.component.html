@@ -1,0 +1,25 @@
+<div class="favorite-card">
+  <div class="favorite-card__icon">
+    {{ getTypeIcon(favorite.favorite_type) }}
+  </div>
+  <div class="favorite-card__content">
+    <div class="favorite-card__header">
+      <span class="favorite-card__type">{{ getTypeLabel(favorite.favorite_type) }}</span>
+    </div>
+    <h3 class="favorite-card__title">{{ favorite.label }}</h3>
+    <div class="favorite-card__location">
+      {{ getLocation() }}
+    </div>
+    <div class="favorite-card__meta" *ngIf="favorite.latitude && favorite.longitude">
+      <span>{{ favorite.latitude.toFixed(4) }}, {{ favorite.longitude.toFixed(4) }}</span>
+    </div>
+  </div>
+  <div class="favorite-card__actions">
+    <button class="favorite-card__action" (click)="onEdit()" title="Editar">
+      ✏️
+    </button>
+    <button class="favorite-card__action favorite-card__action--danger" (click)="onDelete()" title="Eliminar">
+      🗑️
+    </button>
+  </div>
+</div>

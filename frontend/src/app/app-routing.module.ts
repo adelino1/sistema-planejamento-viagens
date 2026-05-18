@@ -32,6 +32,14 @@ const routes: Routes = [
         loadChildren: () => import('./modules/trips/trips.module').then((m) => m.TripsModule),
       },
       {
+        path: 'favorites',
+        loadChildren: () => import('./modules/favorites/favorites.module').then((m) => m.FavoritesModule),
+      },
+      {
+        path: 'profile',
+        loadChildren: () => import('./modules/profile/profile.module').then((m) => m.ProfileModule),
+      },
+      {
         path: 'admin',
         canActivate: [AdminGuard],
         loadChildren: () => import('./modules/admin/admin.module').then((m) => m.AdminModule),
