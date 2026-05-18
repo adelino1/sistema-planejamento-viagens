@@ -1,0 +1,47 @@
+<div class="expenses-wrapper">
+  <div class="summary-cards">
+    <div class="card budget">
+      <h4>Orçamento da Viagem</h4>
+      <p class="amount">AOA {{ summary.budget_aoa | number }}</p>
+    </div>
+    <div class="card spent">
+      <h4>Total Gasto</h4>
+      <p class="amount">AOA {{ summary.total_spent_aoa | number }}</p>
+    </div>
+    <div class="card remaining" [class.negative]="summary.remaining_aoa < 0">
+      <h4>Saldo Restante</h4>
+      <p class="amount">AOA {{ summary.remaining_aoa | number }}</p>
+    </div>
+  </div>
+
+  <div class="splitwise-header">
+    <h3>Despesas do Grupo</h3>
+    <button class="btn-primary">Adicionar Despesa</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Carregando despesas...</div>
+
+  <div *ngIf="!loading && expenses.length === 0" class="empty">
+    Nenhuma despesa registada ainda.
+  </div>
+
+  <div class="expenses-list" *ngIf="!loading && expenses.length > 0">
+    <div class="expense-item" *ngFor="let exp of expenses">
+      <div class="icon">
+        <span *ngIf="exp.category === 'food'">🍔</span>
+        <span *ngIf="exp.category === 'transportation'">🚕</span>
+        <span *ngIf="exp.category === 'accommodation'">🏨</span>
+        <span *ngIf="exp.category === 'activities'">🎟️</span>
+        <span *ngIf="exp.category === 'other'">🛍️</span>
+        <span *ngIf="!exp.category">💰</span>
+      </div>
+      <div class="details">
+        <p class="desc">{{ exp.description }}</p>
+        <p class="meta">{{ exp.payer_name || 'Utilizador' }} pagou no dia {{ exp.date | date:'shortDate' }}</p>
+      </div>
+      <div class="cost">
+        <p class="amount">AOA {{ exp.amount_aoa | number }}</p>
+      </div>
+    </div>
+  </div>
+</div>

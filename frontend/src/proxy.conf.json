@@ -1,7 +1,0 @@
-{
-  "/api": {
-    "target": "http://localhost/sistema-planejamento-viagens/backend/public",
-    "secure": false,
-    "changeOrigin": true
-  }
-}

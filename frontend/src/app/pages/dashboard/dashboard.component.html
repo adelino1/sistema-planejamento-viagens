@@ -1,0 +1,39 @@
+<app-header></app-header>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Minhas Viagens</h1>
+    <button class="btn-primary">Criar Nova Viagem</button>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <p>Carregando as suas viagens...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <p><em>Exibindo dados de demonstração (mock)...</em></p>
+  </div>
+
+  <div class="trips-grid">
+    <div class="trip-card" *ngFor="let trip of trips" [routerLink]="['/trip', trip.id]">
+      <div class="trip-image">
+        <img [src]="trip.cover_image || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=600'" [alt]="trip.title">
+      </div>
+      <div class="trip-info">
+        <h3>{{ trip.title }}</h3>
+        <p class="destination">{{ trip.destination }}</p>
+        <div class="trip-meta">
+          <span>{{ trip.start_date | date:'dd MMM yyyy' }}</span>
+          <span class="budget">AOA {{ trip.budget_aoa | number }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && trips.length === 0 && !error" class="empty-state">
+    <div class="empty-icon">🌍</div>
+    <h3>Nenhuma viagem planeada</h3>
+    <p>Comece a explorar Angola e o mundo. Crie o seu primeiro roteiro!</p>
+    <button class="btn-primary">Criar Nova Viagem</button>
+  </div>
+</div>

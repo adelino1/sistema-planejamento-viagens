@@ -1,7 +1,0 @@
--- Não inserir administrador em SQL manual com hash estático (risco e desatualização).
--- Utilize o script PHP que gera bcrypt com password_hash:
---
---   php backend/scripts/seed_admin.php admin@local.dev "SuaPasswordSegura" "Nome Admin"
---
--- Ou no Windows (XAMPP):
---   "C:\xampp\php\php.exe" backend\scripts\seed_admin.php ...

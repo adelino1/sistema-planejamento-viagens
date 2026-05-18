@@ -1,0 +1,191 @@
+.loading-state {
+  text-align: center;
+  padding: 100px;
+  font-size: 18px;
+}
+
+.trip-details-container {
+  .trip-hero {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+      display: flex;
+      align-items: flex-end;
+      padding: 60px 80px;
+
+      .hero-content {
+        color: white;
+
+        .back-link {
+          color: white;
+          text-decoration: none;
+          display: inline-block;
+          margin-bottom: 16px;
+          font-weight: 500;
+          opacity: 0.8;
+          &:hover { opacity: 1; }
+        }
+
+        h1 {
+          font-size: 48px;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .destination, .dates {
+          font-size: 18px;
+          margin-bottom: 8px;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  .trip-content {
+    padding: 40px 80px;
+    max-width: 1440px;
+    margin: 0 auto;
+
+    .tabs {
+      display: flex;
+      gap: 32px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 32px;
+
+      button {
+        padding: 16px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--color-text-light);
+        position: relative;
+
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: transparent;
+          transition: background-color 0.2s;
+        }
+
+        &:hover {
+          color: var(--color-text);
+        }
+
+        &.active {
+          color: var(--color-text);
+          font-weight: 600;
+          &:after {
+            background-color: var(--color-primary);
+          }
+        }
+      }
+    }
+
+    .split-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+
+      .activities-list {
+        .day-card {
+          background: var(--color-surface);
+          border-radius: var(--radius-md);
+          padding: 24px;
+          margin-bottom: 24px;
+
+          h3 { font-size: 20px; margin-bottom: 4px; }
+          .date { color: var(--color-text-light); margin-bottom: 24px; }
+
+          .activity {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+
+            .time {
+              font-weight: 600;
+              color: var(--color-primary);
+              min-width: 50px;
+            }
+
+            .activity-details {
+              h4 { font-size: 16px; margin-bottom: 4px; }
+              p { color: var(--color-text-light); font-size: 14px; }
+            }
+          }
+
+          .add-activity-btn {
+            color: var(--color-primary);
+            font-weight: 600;
+            padding: 8px 0;
+            &:hover { text-decoration: underline; }
+          }
+        }
+      }
+
+      .map-view {
+        position: sticky;
+        top: 100px;
+        height: calc(100vh - 140px);
+        
+        .map-placeholder {
+          background: #e9ecef;
+          border-radius: var(--radius-md);
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          color: var(--color-text-light);
+        }
+      }
+    }
+
+    .expenses-tab {
+      .budget-card {
+        background: var(--color-surface);
+        padding: 24px;
+        border-radius: var(--radius-md);
+        display: inline-block;
+        margin-bottom: 24px;
+
+        h3 { font-size: 16px; color: var(--color-text-light); margin-bottom: 8px; }
+        .amount { font-size: 32px; font-weight: 700; color: var(--color-primary); }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .trip-details-container {
+    .trip-hero {
+      height: 300px;
+      .hero-overlay {
+        padding: 24px;
+        h1 { font-size: 32px; }
+      }
+    }
+    
+    .trip-content {
+      padding: 24px;
+
+      .split-layout {
+        grid-template-columns: 1fr;
+        
+        .map-view {
+          height: 300px;
+          position: static;
+        }
+      }
+    }
+  }
+}

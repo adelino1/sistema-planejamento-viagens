@@ -1,0 +1,50 @@
+<app-header></app-header>
+<div class="ai-container">
+  <div class="ai-hero">
+    <div class="sparkles">✨</div>
+    <h1>Planejador de Viagens com IA</h1>
+    <p>Descreva a sua viagem de sonho e a nossa Inteligência Artificial montará um roteiro perfeito para si em segundos.</p>
+    
+    <div class="search-box">
+      <textarea [(ngModel)]="prompt" placeholder="Ex: Quero passar um fim de semana romântico no Lubango com um orçamento de 150.000 AOA..." rows="3"></textarea>
+      <button class="btn-primary" (click)="generate()" [disabled]="loading || !prompt">
+        <span *ngIf="!loading">Gerar Roteiro Mágico</span>
+        <span *ngIf="loading">A pensar...</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="results-area" *ngIf="loading">
+    <div class="loading-pulse">
+      <div class="pulse-ring"></div>
+      <p>A IA está a analisar os melhores destinos e orçamentos em AOA para o seu perfil...</p>
+    </div>
+  </div>
+
+  <div class="results-area" *ngIf="response">
+    <div class="itinerary-card">
+      <div class="card-header">
+        <h2>{{ response.title }}</h2>
+        <p>{{ response.description }}</p>
+      </div>
+      
+      <div class="days-list">
+        <div class="day-block" *ngFor="let day of response.days">
+          <h3>Dia {{ day.day }}</h3>
+          <ul>
+            <li *ngFor="let activity of day.activities">
+              <span class="time">{{ activity.time }}</span>
+              <span class="desc">{{ activity.desc }}</span>
+              <span class="cost" *ngIf="activity.cost_aoa">AOA {{ activity.cost_aoa | number }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn-primary">Salvar Viagem no Dashboard</button>
+        <button class="btn-secondary" routerLink="/dashboard">Descartar</button>
+      </div>
+    </div>
+  </div>
+</div>

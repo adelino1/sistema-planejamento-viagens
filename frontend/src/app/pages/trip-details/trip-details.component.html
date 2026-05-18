@@ -1,0 +1,66 @@
+<app-header></app-header>
+
+<div *ngIf="loading" class="loading-state">
+  <p>A carregar os detalhes da viagem...</p>
+</div>
+
+<div *ngIf="!loading && trip" class="trip-details-container">
+  <div class="trip-hero" [style.backgroundImage]="'url(' + (trip.cover_image || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1200') + ')'">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <a routerLink="/dashboard" class="back-link">← Voltar às Viagens</a>
+        <h1>{{ trip.title }}</h1>
+        <p class="destination">📍 {{ trip.destination }}</p>
+        <p class="dates">🗓️ {{ trip.start_date | date:'longDate' }} - {{ trip.end_date | date:'longDate' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="trip-content">
+    <div class="tabs">
+      <button [class.active]="activeTab === 'itinerary'" (click)="activeTab = 'itinerary'">Roteiro Diário</button>
+      <button [class.active]="activeTab === 'expenses'" (click)="activeTab = 'expenses'">Despesas (AOA)</button>
+      <button [class.active]="activeTab === 'documents'" (click)="activeTab = 'documents'">Documentos</button>
+    </div>
+
+    <div class="tab-content">
+      <!-- Tab Roteiro -->
+      <div *ngIf="activeTab === 'itinerary'" class="itinerary-tab split-layout">
+        <div class="activities-list">
+          <div class="day-card">
+            <h3>Dia 1: Chegada em Luanda</h3>
+            <p class="date">{{ trip.start_date | date:'dd MMM yyyy' }}</p>
+            <div class="activity">
+              <span class="time">10:00</span>
+              <div class="activity-details">
+                <h4>Check-in no Hotel</h4>
+                <p>Epic Sana Luanda</p>
+              </div>
+            </div>
+            <div class="activity">
+              <span class="time">13:00</span>
+              <div class="activity-details">
+                <h4>Almoço na Ilha do Mussulo</h4>
+                <p>Restaurante local</p>
+              </div>
+            </div>
+            <button class="add-activity-btn">+ Adicionar Atividade</button>
+          </div>
+        </div>
+        <div class="map-view">
+          <app-map [center]="mapCenter" [zoom]="mapZoom" [markers]="mapMarkers"></app-map>
+        </div>
+      </div>
+
+      <!-- Tab Despesas -->
+      <div *ngIf="activeTab === 'expenses'" class="expenses-tab">
+        <app-expense-list [tripId]="trip.id!" [budgetAoa]="trip.budget_aoa"></app-expense-list>
+      </div>
+
+      <!-- Tab Documentos -->
+      <div *ngIf="activeTab === 'documents'" class="documents-tab">
+        <p>Módulo de anexo de PDFs e confirmações de reserva será integrado aqui.</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+.dashboard-container {
+  padding: 40px 80px;
+  max-width: 1440px;
+  margin: 0 auto;
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-text);
+      letter-spacing: -0.5px;
+    }
+  }
+
+  .loading-state, .error-message, .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: 40px;
+  }
+
+  .error-message {
+    background: #FFF0F0;
+    color: #D8334E;
+    
+    p { margin-bottom: 8px; }
+  }
+
+  .trips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 32px;
+
+    .trip-card {
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+
+      &:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+      }
+
+      .trip-image {
+        height: 200px;
+        width: 100%;
+        
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .trip-info {
+        padding: 20px;
+
+        h3 {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+
+        .destination {
+          color: var(--color-text-light);
+          font-size: 14px;
+          margin-bottom: 16px;
+        }
+
+        .trip-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 14px;
+          font-weight: 500;
+
+          .budget {
+            color: var(--color-primary);
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    h3 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    p {
+      color: var(--color-text-light);
+      margin-bottom: 24px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 24px;
+    
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+}
