@@ -72,6 +72,63 @@
       </section>
     </div>
 
+    <!-- 🌍 Widget do Clima e Imagem do Destino (APIs Externas) -->
+    <section class="detail__external-content">
+      <div class="detail__split">
+        <!-- Weather Widget -->
+        <div class="detail__weather-card glass">
+          <h3>Clima do Destino</h3>
+          <div *ngIf="loadingExternal" class="detail__external-loading">
+            <span class="detail__spinner"></span> Carregando clima...
+          </div>
+          <div *ngIf="!loadingExternal && weather" class="detail__weather-content">
+            <div class="detail__weather-main">
+              <span class="detail__weather-icon">{{ weather.icon }}</span>
+              <div class="detail__weather-info">
+                <span class="detail__weather-temp">{{ weather.temperature }}°C</span>
+                <span class="detail__weather-desc">{{ weather.description }}</span>
+              </div>
+            </div>
+            <div class="detail__weather-details">
+              <div class="detail__weather-stat">
+                <span class="detail__stat-label">Humidade</span>
+                <span class="detail__stat-value">{{ weather.humidity }}%</span>
+              </div>
+              <div class="detail__weather-stat">
+                <span class="detail__stat-label">Vento</span>
+                <span class="detail__stat-value">{{ weather.windSpeed }} m/s</span>
+              </div>
+            </div>
+            <p class="detail__weather-credit">
+              <small>Dados: OpenWeatherMap</small>
+            </p>
+          </div>
+        </div>
+
+        <!-- Destination Image Card -->
+        <div class="detail__destination-image-card glass">
+          <h3>Imagem do Destino</h3>
+          <div *ngIf="loadingExternal" class="detail__external-loading">
+            <span class="detail__spinner"></span> Carregando imagem...
+          </div>
+          <div *ngIf="!loadingExternal && destinationImage" class="detail__destination-image-wrapper">
+            <img
+              [src]="destinationImage.imageUrl"
+              [alt]="destinationImage.alt"
+              class="detail__destination-image"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="detail__image-overlay">
+              <a [href]="destinationImage.photographerLink" target="_blank" rel="noopener noreferrer" class="detail__image-credit">
+                {{ destinationImage.credit }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="detail__section">
       <div class="detail__section-head">
         <h2>Itinerário</h2>

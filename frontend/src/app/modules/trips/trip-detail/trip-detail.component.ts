@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -10,14 +10,17 @@ import {
   mapIllustrationUrl,
   openStreetMapSearchUrl,
 } from '../../../core/utils/travel-visuals';
+import { WeatherService, WeatherWidget } from '../../../services/weather-external.service';
+import { UnsplashService, DestinationImage } from '../../../services/unsplash.service';
 import { ExpenseListComponent } from '../../expenses/expense-list/expense-list.component';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-trip-detail',
   templateUrl: './trip-detail.component.html',
   styleUrls: ['./trip-detail.component.scss'],
 })
-export class TripDetailComponent implements OnInit {
+export class TripDetailComponent implements OnInit, OnDestroy {
   trip: Trip | null = null;
   itinerary: TripDetailPayload['itinerary_days'] = [];
   loading = true;
@@ -27,6 +30,11 @@ export class TripDetailComponent implements OnInit {
   galleryUrls: string[] = [];
   mapPreviewUrl = '';
   mapSearchUrl = '';
+
+  // Dados das APIs externas
+  weather: WeatherWidget | null = null;
+  destinationImage: DestinationImage | null = null;
+  loadingExternal = false;
 
   readonly dayForm = this.fb.nonNullable.group({
     day_date: ['', Validators.required],
@@ -42,6 +50,8 @@ export class TripDetailComponent implements OnInit {
     private readonly route: ActivatedRoute,
     readonly router: Router,
     private readonly tripsApi: TripService,
+    private readonly weatherService: WeatherService,
+    private readonly unsplashService: UnsplashService,
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +63,10 @@ export class TripDetailComponent implements OnInit {
       return;
     }
     this.load();
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup se necessário
   }
 
   load(): void {
@@ -67,12 +81,39 @@ export class TripDetailComponent implements OnInit {
           this.mapPreviewUrl = mapIllustrationUrl();
           this.mapSearchUrl = openStreetMapSearchUrl(this.trip.city, this.trip.country);
           this.ensureActivityForms();
+
+          // 🌍 Carregar dados das APIs externas (clima + imagem)
+          this.loadExternalData(this.trip.city, this.trip.country);
         }
         this.loading = false;
       },
       error: () => {
         this.error = 'Não foi possível carregar a viagem.';
         this.loading = false;
+      },
+    });
+  }
+
+  /**
+   * Carrega clima e imagem do destino em paralelo
+   * Usa combineLatest para fazer ambas as requisições simultaneamente
+   */
+  private loadExternalData(city: string, country: string): void {
+    this.loadingExternal = true;
+
+    combineLatest([
+      this.weatherService.getWeatherByCity(city, country),
+      this.unsplashService.searchDestinationImage(city, country),
+    ]).subscribe({
+      next: ([weatherData, imageData]) => {
+        this.weather = weatherData;
+        this.destinationImage = imageData || this.unsplashService.getMockImage(city);
+        this.loadingExternal = false;
+      },
+      error: () => {
+        // Se falhar, o weather service já retorna fallback
+        // Aqui apenas marcamos como carregado
+        this.loadingExternal = false;
       },
     });
   }
