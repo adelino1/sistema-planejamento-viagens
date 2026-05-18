@@ -1,23 +1,54 @@
 <section class="trips">
-  <header class="trips__head">
-    <h1>As minhas viagens</h1>
-    <button type="button" class="trips__new" (click)="goNew()">Nova viagem</button>
+  <header class="trips__head spv-animate-in">
+    <div>
+      <p class="trips__eyebrow">Os seus destinos</p>
+      <h1>Viagens</h1>
+      <p class="trips__lead">Cartões com imagem, datas e estado — pronto para evoluir para despesas e exportação.</p>
+    </div>
+    <button type="button" class="trips__new" (click)="goNew()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+      </svg>
+      Nova viagem
+    </button>
   </header>
 
-  <p *ngIf="loading">A carregar…</p>
+  <div class="trips__loading" *ngIf="loading">
+    <div class="trips__grid">
+      <div class="skeleton trips__sk" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"></div>
+    </div>
+  </div>
+
   <p *ngIf="error" class="trips__err">{{ error }}</p>
 
   <div class="trips__grid" *ngIf="!loading && !error">
-    <article class="card" *ngFor="let t of trips">
-      <h2><a [routerLink]="['/trips', t.id]">{{ t.name }}</a></h2>
-      <p class="card__meta">{{ t.city }}, {{ t.country }}</p>
-      <p class="card__dates">{{ t.start_date }} → {{ t.end_date }}</p>
-      <p class="card__status">{{ t.status }}</p>
-      <nav class="card__actions">
-        <a [routerLink]="['/trips', t.id]">Detalhe</a>
-        <a [routerLink]="['/trips', t.id, 'edit']">Editar</a>
-      </nav>
+    <article class="trip-card" *ngFor="let t of trips; let i = index" [style.animation-delay]="i * 60 + 'ms'">
+      <div class="trip-card__media" [style.background-image]="'url(' + coverUrl(t) + ')'">
+        <div class="trip-card__gradient"></div>
+        <span class="trip-card__badge">{{ t.status }}</span>
+      </div>
+      <div class="trip-card__body">
+        <h2><a [routerLink]="['/trips', t.id]">{{ t.name }}</a></h2>
+        <p class="trip-card__loc">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 21s7-4.35 7-10a7 7 0 10-14 0c0 5.65 7 10 7 10z" stroke-linejoin="round" />
+            <circle cx="12" cy="11" r="2.5" />
+          </svg>
+          {{ t.city }}, {{ t.country }}
+        </p>
+        <p class="trip-card__dates">{{ t.start_date }} → {{ t.end_date }}</p>
+        <nav class="trip-card__actions">
+          <a [routerLink]="['/trips', t.id]">Detalhe</a>
+          <a [routerLink]="['/trips', t.id, 'edit']">Editar</a>
+        </nav>
+      </div>
     </article>
-    <p *ngIf="trips.length === 0" class="trips__empty">Ainda não tem viagens. Crie a primeira.</p>
+
+    <div class="trips__empty" *ngIf="trips.length === 0">
+      <div class="trips__empty-art" aria-hidden="true"></div>
+      <h3>Ainda sem viagens</h3>
+      <p>Crie a primeira experiência — o cartão ganhará automaticamente uma imagem de destino.</p>
+      <button type="button" class="trips__new" (click)="goNew()">Começar agora</button>
+    </div>
   </div>
 </section>

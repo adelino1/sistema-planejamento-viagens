@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { AuthUser } from '../../models/user.model';
 
@@ -7,10 +7,12 @@ import { AuthUser } from '../../models/user.model';
   templateUrl: './admin-home.component.html',
   styleUrls: ['./admin-home.component.scss'],
 })
-export class AdminHomeComponent {
-  user: AuthUser | null;
+export class AdminHomeComponent implements OnInit {
+  user: AuthUser | null = null;
 
-  constructor(private readonly auth: AuthService) {
+  constructor(private readonly auth: AuthService) {}
+
+  ngOnInit(): void {
     this.user = this.auth.getCurrentUser();
   }
 }

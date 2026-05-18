@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,6 +14,7 @@ export class MainLayoutComponent {
 
   constructor(
     readonly auth: AuthService,
+    readonly theme: ThemeService,
     private readonly router: Router,
   ) {}
 

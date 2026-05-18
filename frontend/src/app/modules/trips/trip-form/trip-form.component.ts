@@ -4,6 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TripService } from '../../../services/trip.service';
 import { TripStatus } from '../../../models/trip.model';
+import { TRAVEL_HERO_AUTH } from '../../../core/utils/travel-visuals';
 
 @Component({
   selector: 'app-trip-form',
@@ -12,6 +13,7 @@ import { TripStatus } from '../../../models/trip.model';
 })
 export class TripFormComponent implements OnInit {
   readonly statuses: TripStatus[] = ['draft', 'planned', 'ongoing', 'completed', 'cancelled'];
+  readonly formHero = TRAVEL_HERO_AUTH;
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],

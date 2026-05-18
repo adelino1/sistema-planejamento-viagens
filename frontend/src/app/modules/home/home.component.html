@@ -1,30 +1,106 @@
 <section class="home">
-  <header class="home__header">
-    <h1>Sistema de Planejamento de Viagens</h1>
-    <p class="home__subtitle">Fundações e autenticação — API REST + Angular modular</p>
+  <header class="home__top">
+    <a routerLink="/home" class="home__logo">
+      <span class="home__logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="26" height="26" fill="none">
+          <path d="M6 22L16 6l10 16H6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <circle cx="16" cy="20" r="2.2" fill="currentColor" />
+        </svg>
+      </span>
+      <span>Voyage</span>
+    </a>
     <nav class="home__nav">
-      <a routerLink="/auth/login">Login</a>
-      <a routerLink="/auth/register">Registo</a>
-      <a routerLink="/trips">Viagens</a>
-      <a routerLink="/dashboard">Painel</a>
-      <a routerLink="/admin">Admin</a>
+      <a routerLink="/auth/login">Entrar</a>
+      <a routerLink="/auth/register" class="home__nav-cta">Começar grátis</a>
+      <button type="button" class="home__theme" (click)="theme.toggle()" [attr.aria-label]="theme.mode$.value === 'dark' ? 'Tema claro' : 'Tema escuro'">
+        <ng-container *ngIf="theme.mode$ | async as m">
+          <span *ngIf="m === 'light'">◐</span>
+          <span *ngIf="m === 'dark'">☾</span>
+        </ng-container>
+      </button>
     </nav>
   </header>
 
-  <article class="card" *ngIf="loading">A carregar estado da API…</article>
+  <div class="home__hero spv-animate-in" [style.background-image]="'url(' + heroImage + ')'">
+    <div class="home__hero-overlay"></div>
+    <div class="home__hero-inner">
+      <p class="home__eyebrow">Planeamento inteligente · API + Angular</p>
+      <h1>Planeie a sua próxima aventura com elegância.</h1>
+      <p class="home__lead">
+        Itinerários por dias, orçamentos e uma experiência visual digna de produtos como Airbnb ou Google Travel — construída para o seu laboratório.
+      </p>
+      <div class="home__cta-row">
+        <a routerLink="/auth/register" class="home__cta-primary">Criar conta</a>
+        <a routerLink="/auth/login" class="home__cta-secondary">Já tenho sessão</a>
+      </div>
+    </div>
+  </div>
 
-  <article class="card card--error" *ngIf="error && !loading">
-    <h2>Erro</h2>
-    <p>{{ error }}</p>
-  </article>
+  <section class="home__strip">
+    <div class="home__strip-item spv-animate-in spv-delay-1">
+      <strong>Organização</strong>
+      <span>Itinerário claro por dia</span>
+    </div>
+    <div class="home__strip-item spv-animate-in spv-delay-2">
+      <strong>Exploração</strong>
+      <span>Destinos com identidade visual</span>
+    </div>
+    <div class="home__strip-item spv-animate-in spv-delay-3">
+      <strong>Modernidade</strong>
+      <span>Stack Angular 17 + PHP 8</span>
+    </div>
+  </section>
 
-  <article class="card" *ngIf="payload && !loading">
-    <h2>Ligação OK</h2>
-    <p><strong>Mensagem:</strong> {{ payload.message }}</p>
-    <ul>
-      <li><strong>API:</strong> {{ payload.data.api }}</li>
-      <li><strong>Base de dados:</strong> {{ payload.data.database }}</li>
-      <li><strong>Timestamp:</strong> {{ payload.data.timestamp }}</li>
-    </ul>
-  </article>
+  <section class="home__features">
+    <h2>Porquê este sistema impressiona</h2>
+    <p class="home__features-intro">Camadas separadas, REST JSON e uma interface que conta uma história de viagem — não apenas formulários.</p>
+    <div class="home__feature-grid">
+      <article class="home__feature-card">
+        <div class="home__feature-img" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80')"></div>
+        <h3>Destinos memoráveis</h3>
+        <p>Imagens curadas e composição tipo “travel SaaS” elevam a percepção de qualidade perante avaliadores.</p>
+      </article>
+      <article class="home__feature-card">
+        <div class="home__feature-img" style="background-image: url('https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=800&q=80')"></div>
+        <h3>Itinerário visual</h3>
+        <p>Linha do tempo, galeria e mapa contextual tornam o detalhe da viagem um showcase de UX.</p>
+      </article>
+      <article class="home__feature-card">
+        <div class="home__feature-img" style="background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80')"></div>
+        <h3>Pronto para escalar</h3>
+        <p>Lazy loading, guards e módulos por domínio preparam terreno para despesas, notificações e exportações.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="home__status">
+    <div class="home__status-card" *ngIf="loading">
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line short"></div>
+    </div>
+
+    <div class="home__status-card home__status-card--error" *ngIf="error && !loading">
+      <h3>API indisponível</h3>
+      <p>{{ error }}</p>
+    </div>
+
+    <div class="home__status-card home__status-card--ok" *ngIf="payload && !loading">
+      <div class="home__status-head">
+        <span class="home__pulse" aria-hidden="true"></span>
+        <h3>Ligação estabelecida</h3>
+      </div>
+      <p class="home__status-msg">{{ payload.message }}</p>
+      <ul>
+        <li><span>API</span> {{ payload.data.api }}</li>
+        <li><span>Base de dados</span> {{ payload.data.database }}</li>
+        <li><span>Timestamp</span> {{ payload.data.timestamp }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="home__foot">
+    <span>Sistema de Planejamento de Viagens</span>
+    <span class="home__foot-dot">·</span>
+    <span>Laboratório · Monorepo</span>
+  </footer>
 </section>

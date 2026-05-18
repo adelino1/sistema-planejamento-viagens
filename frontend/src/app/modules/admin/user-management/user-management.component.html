@@ -1,0 +1,66 @@
+<div class="user-management">
+  <h2>{{ 'admin.usersList' | translate }}</h2>
+
+  <div *ngIf="loading; else tableTpl" class="loading">
+    {{ 'common.loading' | translate }}
+  </div>
+
+  <ng-template #tableTpl>
+    <table *ngIf="users.length; else noUsersTpl">
+      <thead>
+        <tr>
+          <th>{{ 'admin.name' | translate }}</th>
+          <th>{{ 'admin.email' | translate }}</th>
+          <th>{{ 'admin.role' | translate }}</th>
+          <th>{{ 'common.status' | translate }}</th>
+          <th>{{ 'common.actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.full_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <span [class]="'badge badge-' + (user.is_active ? 'success' : 'danger')">
+              {{ user.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button
+                *ngIf="!user.is_active"
+                (click)="activateUser(user.id)"
+                class="btn-small btn-success"
+              >
+                {{ 'admin.activate' | translate }}
+              </button>
+              <button
+                *ngIf="user.is_active"
+                (click)="deactivateUser(user.id)"
+                class="btn-small btn-warn"
+              >
+                {{ 'admin.deactivate' | translate }}
+              </button>
+              <button (click)="deleteUser(user.id)" class="btn-small btn-danger">
+                {{ 'common.delete' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noUsersTpl>
+      <div class="no-data">{{ 'common.noData' | translate }}</div>
+    </ng-template>
+
+    <div class="pagination">
+      <button [disabled]="page === 1" (click)="prevPage()" class="btn-small">
+        Previous
+      </button>
+      <span>{{ page }}</span>
+      <button (click)="nextPage()" class="btn-small">Next</button>
+    </div>
+  </ng-template>
+</div>

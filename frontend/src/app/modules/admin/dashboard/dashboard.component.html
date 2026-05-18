@@ -1,0 +1,50 @@
+<div class="dashboard" *ngIf="!loading; else loadingTpl">
+  <h1>{{ 'admin.title' | translate }}</h1>
+
+  <!-- Statistiques -->
+  <div class="stats-grid" *ngIf="stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.totalUsers }}</div>
+      <div class="stat-label">{{ 'admin.totalUsers' | translate }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.activeUsers }}</div>
+      <div class="stat-label">{{ 'admin.activeUsers' | translate }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.totalTrips }}</div>
+      <div class="stat-label">{{ 'admin.totalTrips' | translate }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.totalExpenses }}</div>
+      <div class="stat-label">{{ 'admin.totalExpenses' | translate }}</div>
+    </div>
+  </div>
+
+  <!-- Utilisateurs récents -->
+  <section class="recent-section">
+    <h2>{{ 'common.recentData' | translate }}</h2>
+    <table *ngIf="recentUsers.length">
+      <thead>
+        <tr>
+          <th>{{ 'admin.name' | translate }}</th>
+          <th>{{ 'admin.email' | translate }}</th>
+          <th>{{ 'admin.role' | translate }}</th>
+          <th>{{ 'admin.joinDate' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of recentUsers">
+          <td>{{ user.full_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.created_at | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">{{ 'common.loading' | translate }}</div>
+</ng-template>

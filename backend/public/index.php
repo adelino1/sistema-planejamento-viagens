@@ -15,18 +15,21 @@ require_once __DIR__ . '/../repositories/TripRepository.php';
 require_once __DIR__ . '/../repositories/ItineraryDayRepository.php';
 require_once __DIR__ . '/../repositories/ItineraryActivityRepository.php';
 require_once __DIR__ . '/../repositories/FavoriteRepository.php';
+require_once __DIR__ . '/../repositories/NotificationRepository.php';
 require_once __DIR__ . '/../services/HealthService.php';
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../services/TripService.php';
 require_once __DIR__ . '/../services/ItineraryDayService.php';
 require_once __DIR__ . '/../services/ItineraryActivityService.php';
 require_once __DIR__ . '/../services/FavoriteService.php';
+require_once __DIR__ . '/../services/NotificationService.php';
 require_once __DIR__ . '/../controllers/HealthController.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/TripController.php';
 require_once __DIR__ . '/../controllers/ItineraryDayController.php';
 require_once __DIR__ . '/../controllers/ItineraryActivityController.php';
 require_once __DIR__ . '/../controllers/FavoriteController.php';
+require_once __DIR__ . '/../controllers/NotificationController.php';
 
 $appConfig = require __DIR__ . '/../config/app.php';
 $routes = require __DIR__ . '/../routes/api.php';
@@ -81,6 +84,7 @@ try {
     $itineraryDayController = null;
     $itineraryActivityController = null;
     $favoriteController = null;
+    $notificationController = null;
 
     if (!$skipDatabase) {
         $pdo = getPdoConnection();
@@ -94,14 +98,17 @@ try {
         $itineraryDayRepository = new ItineraryDayRepository($pdo);
         $itineraryActivityRepository = new ItineraryActivityRepository($pdo);
         $favoriteRepository = new FavoriteRepository($pdo);
+        $notificationRepository = new NotificationRepository($pdo);
         $tripService = new TripService($tripRepository, $itineraryDayRepository, $itineraryActivityRepository);
         $itineraryDayService = new ItineraryDayService($itineraryDayRepository, $tripRepository);
         $itineraryActivityService = new ItineraryActivityService($itineraryActivityRepository, $itineraryDayRepository);
         $favoriteService = new FavoriteService($favoriteRepository);
+        $notificationService = new NotificationService($notificationRepository);
         $tripController = new TripController($authService, $tripService);
         $itineraryDayController = new ItineraryDayController($authService, $itineraryDayService);
         $itineraryActivityController = new ItineraryActivityController($authService, $itineraryActivityService);
         $favoriteController = new FavoriteController();
+        $notificationController = new NotificationController();
     }
 
     if (!empty($matchedRoute['requiresAuth'])) {
@@ -133,6 +140,9 @@ try {
     }
     if ($favoriteController instanceof FavoriteController) {
         $controllers['FavoriteController'] = $favoriteController;
+    }
+    if ($notificationController instanceof NotificationController) {
+        $controllers['NotificationController'] = $notificationController;
     }
 
     $controller = $controllers[$controllerName] ?? null;

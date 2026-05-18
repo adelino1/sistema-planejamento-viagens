@@ -72,4 +72,13 @@ return [
     ['method' => 'GET', 'path' => '/api/v1/favorites/{id}', 'action' => ['FavoriteController', 'show'], 'requiresAuth' => true],
     ['method' => 'PUT', 'path' => '/api/v1/favorites/{id}', 'action' => ['FavoriteController', 'update'], 'requiresAuth' => true],
     ['method' => 'DELETE', 'path' => '/api/v1/favorites/{id}', 'action' => ['FavoriteController', 'destroy'], 'requiresAuth' => true],
+
+    // Notificações
+    ['method' => 'GET', 'path' => '/api/v1/notifications', 'action' => ['NotificationController', 'index'], 'requiresAuth' => true],
+    ['method' => 'GET', 'path' => '/api/v1/notifications/unread-count', 'action' => ['NotificationController', 'unreadCount'], 'requiresAuth' => true],
+    ['method' => 'POST', 'path' => '/api/v1/notifications', 'action' => ['NotificationController', 'store'], 'requiresAuth' => true],
+    ['method' => 'GET', 'path' => '/api/v1/notifications/{id}', 'action' => ['NotificationController', 'show'], 'requiresAuth' => true],
+    ['method' => 'PUT', 'path' => '/api/v1/notifications/{id}/read', 'action' => ['NotificationController', 'markAsRead'], 'requiresAuth' => true],
+    ['method' => 'PUT', 'path' => '/api/v1/notifications/read-all', 'action' => ['NotificationController', 'markAllAsRead'], 'requiresAuth' => true],
+    ['method' => 'DELETE', 'path' => '/api/v1/notifications/{id}', 'action' => ['NotificationController', 'destroy'], 'requiresAuth' => true],
 ];

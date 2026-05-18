@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TripService } from '../../../services/trip.service';
 import { Trip } from '../../../models/trip.model';
+import { coverImageForTrip } from '../../../core/utils/travel-visuals';
 
 @Component({
   selector: 'app-trip-list',
@@ -35,5 +36,9 @@ export class TripListComponent implements OnInit {
 
   goNew(): void {
     void this.router.navigate(['/trips/new']);
+  }
+
+  coverUrl(t: Trip): string {
+    return coverImageForTrip(t);
   }
 }

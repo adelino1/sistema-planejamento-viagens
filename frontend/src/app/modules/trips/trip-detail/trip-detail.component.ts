@@ -4,6 +4,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
 import { TripService } from '../../../services/trip.service';
 import { ItineraryActivity, ItineraryDay, Trip, TripDetailPayload } from '../../../models/trip.model';
+import {
+  coverImageForTrip,
+  galleryImagesForTrip,
+  mapIllustrationUrl,
+  openStreetMapSearchUrl,
+} from '../../../core/utils/travel-visuals';
+import { ExpenseListComponent } from '../../expenses/expense-list/expense-list.component';
 
 @Component({
   selector: 'app-trip-detail',
@@ -15,6 +22,11 @@ export class TripDetailComponent implements OnInit {
   itinerary: TripDetailPayload['itinerary_days'] = [];
   loading = true;
   error: string | null = null;
+
+  heroImage = '';
+  galleryUrls: string[] = [];
+  mapPreviewUrl = '';
+  mapSearchUrl = '';
 
   readonly dayForm = this.fb.nonNullable.group({
     day_date: ['', Validators.required],
@@ -50,6 +62,10 @@ export class TripDetailComponent implements OnInit {
         if (res.success) {
           this.trip = res.data.trip;
           this.itinerary = res.data.itinerary_days;
+          this.heroImage = coverImageForTrip(this.trip);
+          this.galleryUrls = galleryImagesForTrip(this.trip);
+          this.mapPreviewUrl = mapIllustrationUrl();
+          this.mapSearchUrl = openStreetMapSearchUrl(this.trip.city, this.trip.country);
           this.ensureActivityForms();
         }
         this.loading = false;

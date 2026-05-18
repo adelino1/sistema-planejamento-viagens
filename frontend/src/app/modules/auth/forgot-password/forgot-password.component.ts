@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
+import { mapIllustrationUrl } from '../../../core/utils/travel-visuals';
 
 @Component({
   selector: 'app-forgot-password',
@@ -9,6 +10,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./forgot-password.component.scss'],
 })
 export class ForgotPasswordComponent {
+  readonly visualBg = mapIllustrationUrl();
+
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
   });

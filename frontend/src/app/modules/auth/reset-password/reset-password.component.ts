@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
+import { TRAVEL_HERO_HOME } from '../../../core/utils/travel-visuals';
 
 @Component({
   selector: 'app-reset-password',
@@ -10,6 +11,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./reset-password.component.scss'],
 })
 export class ResetPasswordComponent implements OnInit {
+  readonly visualBg = TRAVEL_HERO_HOME;
+
   readonly form = this.fb.nonNullable.group({
     token: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(8)]],

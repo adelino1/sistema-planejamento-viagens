@@ -1,32 +1,46 @@
 <section class="trip-form" *ngIf="!loading">
-  <h1>{{ isEdit ? 'Editar viagem' : 'Nova viagem' }}</h1>
-
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <label><span>Nome</span><input type="text" formControlName="name" /></label>
-    <label><span>País</span><input type="text" formControlName="country" /></label>
-    <label><span>Cidade</span><input type="text" formControlName="city" /></label>
-    <div class="row">
-      <label><span>Ida</span><input type="date" formControlName="start_date" /></label>
-      <label><span>Volta</span><input type="date" formControlName="end_date" /></label>
+  <div class="trip-form__hero" [style.background-image]="'url(' + formHero + ')'">
+    <div class="trip-form__hero-overlay"></div>
+    <div class="trip-form__hero-text">
+      <p class="trip-form__eyebrow">{{ isEdit ? 'Afinar detalhes' : 'Nova experiência' }}</p>
+      <h1>{{ isEdit ? 'Editar viagem' : 'Planeie um destino' }}</h1>
+      <p>Orçamento, datas e descrição — com visual de produto turístico moderno.</p>
     </div>
-    <div class="row">
-      <label><span>Orçamento</span><input type="number" step="0.01" formControlName="budget_amount" /></label>
-      <label><span>Moeda (ISO)</span><input type="text" maxlength="3" formControlName="budget_currency" /></label>
-    </div>
-    <label><span>Estado</span>
-      <select formControlName="status">
-        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-      </select>
-    </label>
-    <label><span>Descrição</span><textarea rows="3" formControlName="description"></textarea></label>
+  </div>
 
-    <p class="trip-form__err" *ngIf="error">{{ error }}</p>
+  <div class="trip-form__panel glass">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label><span>Nome da viagem</span><input type="text" formControlName="name" placeholder="Ex: Primavera em Lisboa" /></label>
+      <div class="row">
+        <label><span>País</span><input type="text" formControlName="country" /></label>
+        <label><span>Cidade</span><input type="text" formControlName="city" /></label>
+      </div>
+      <div class="row">
+        <label><span>Ida</span><input type="date" formControlName="start_date" /></label>
+        <label><span>Volta</span><input type="date" formControlName="end_date" /></label>
+      </div>
+      <div class="row">
+        <label><span>Orçamento</span><input type="number" step="0.01" formControlName="budget_amount" /></label>
+        <label><span>Moeda (ISO)</span><input type="text" maxlength="3" formControlName="budget_currency" /></label>
+      </div>
+      <label><span>Estado</span>
+        <select formControlName="status">
+          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+        </select>
+      </label>
+      <label><span>Descrição</span><textarea rows="3" formControlName="description" placeholder="Notas, objectivos, vibe da viagem…"></textarea></label>
 
-    <div class="trip-form__actions">
-      <button type="submit" [disabled]="form.invalid">Guardar</button>
-      <button type="button" class="secondary" (click)="cancel()">Cancelar</button>
-    </div>
-  </form>
+      <p class="trip-form__err" *ngIf="error">{{ error }}</p>
+
+      <div class="trip-form__actions">
+        <button type="submit" [disabled]="form.invalid">Guardar</button>
+        <button type="button" class="secondary" (click)="cancel()">Cancelar</button>
+      </div>
+    </form>
+  </div>
 </section>
 
-<p *ngIf="loading">A carregar…</p>
+<div class="trip-form__loading" *ngIf="loading">
+  <div class="skeleton trip-form__sk1"></div>
+  <div class="skeleton trip-form__sk2"></div>
+</div>

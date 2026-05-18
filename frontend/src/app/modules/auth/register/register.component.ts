@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
+import { TRAVEL_HERO_AUTH } from '../../../core/utils/travel-visuals';
 
 @Component({
   selector: 'app-register',
@@ -10,6 +11,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
+  readonly visualBg = TRAVEL_HERO_AUTH;
+
   readonly form = this.fb.nonNullable.group({
     full_name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
