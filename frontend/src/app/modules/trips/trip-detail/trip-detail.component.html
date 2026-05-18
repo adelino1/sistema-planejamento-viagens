@@ -129,7 +129,7 @@
         <h2>Despesas</h2>
         <p>Gestão de orçamento e gastos da viagem.</p>
       </div>
-      <app-expense-list [tripId]="tripId" [currencySymbol]="trip?.budget_currency === 'USD' ? '$' : trip?.budget_currency === 'GBP' ? '£' : trip?.budget_currency === 'BRL' ? 'R$' : '€'"></app-expense-list>
+      <app-expense-list [tripId]="tripId" [currencySymbol]="trip.budget_currency === 'USD' ? '$' : trip.budget_currency === 'GBP' ? '£' : trip.budget_currency === 'BRL' ? 'R$' : '€'"></app-expense-list>
     </section>
   </div>
 </section>

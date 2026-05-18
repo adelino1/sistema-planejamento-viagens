@@ -1,0 +1,70 @@
+<div class="reports-dashboard">
+  <div class="reports-dashboard__header">
+    <h1 class="reports-dashboard__title">Relatórios de Despesas</h1>
+    <p class="reports-dashboard__subtitle">Visualize e analise as despesas de suas viagens</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="reports-dashboard__loading" *ngIf="loading">
+    <div class="skeleton" style="height: 60px; margin-bottom: 2rem;"></div>
+    <div class="skeleton" style="height: 400px; margin-bottom: 2rem;"></div>
+    <div class="skeleton" style="height: 400px;"></div>
+  </div>
+
+  <!-- Error State -->
+  <div class="reports-dashboard__error" *ngIf="!loading && error">
+    <div class="alert alert-error">
+      <p>{{ error }}</p>
+      <button class="btn-ghost" (click)="retry()">Tentar novamente</button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="reports-dashboard__empty" *ngIf="!loading && !error && reports.length === 0">
+    <p>Nenhuma viagem registada. Crie uma viagem para ver os relatórios.</p>
+  </div>
+
+  <!-- Reports Grid -->
+  <div class="reports-dashboard__grid" *ngIf="!loading && !error && reports.length > 0">
+    <div class="report-card" *ngFor="let report of reports">
+      <div class="report-card__header">
+        <h2 class="report-card__title">{{ report.tripName }}</h2>
+        <span class="report-card__currency">{{ report.currencySymbol }}</span>
+      </div>
+
+      <!-- Report Loading -->
+      <div class="report-card__loading" *ngIf="report.loading">
+        <p>Carregando dados...</p>
+      </div>
+
+      <!-- Report Error -->
+      <div class="report-card__error" *ngIf="!report.loading && report.error">
+        <p>{{ report.error }}</p>
+      </div>
+
+      <!-- Report Content -->
+      <div class="report-card__content" *ngIf="!report.loading && !report.error">
+        <div class="report-card__stats">
+          <div class="stat">
+            <span class="stat__label">Despesas Totais</span>
+            <span class="stat__value">{{ report.currencySymbol }}{{ getTotalExpenses(report.expenses).toFixed(2) }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat__label">Nº de Despesas</span>
+            <span class="stat__value">{{ report.expenses.length }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat__label">Categorias</span>
+            <span class="stat__value">{{ Object.keys(getExpensesByCategory(report.expenses)).length }}</span>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <app-expense-chart
+          [expenses]="report.expenses"
+          [currencySymbol]="report.currencySymbol"
+        ></app-expense-chart>
+      </div>
+    </div>
+  </div>
+</div>

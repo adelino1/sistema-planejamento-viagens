@@ -1,0 +1,21 @@
+<div class="expense-chart">
+  <div class="expense-chart__container" *ngIf="!noData && !loading">
+    <h3 class="expense-chart__title">Despesas por Categoria</h3>
+    <div class="expense-chart__canvas-wrapper">
+      <canvas #chartCanvas class="expense-chart__canvas"></canvas>
+    </div>
+    <div class="expense-chart__summary">
+      <span class="expense-chart__total">
+        Total: <strong>{{ currencySymbol }}{{ totalExpenses.toFixed(2) }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="expense-chart__empty" *ngIf="noData">
+    <p>Sem despesas para exibir no gráfico.</p>
+  </div>
+
+  <div class="expense-chart__loading" *ngIf="loading">
+    <p>Carregando gráfico...</p>
+  </div>
+</div>

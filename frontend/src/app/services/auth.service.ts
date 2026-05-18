@@ -87,6 +87,26 @@ export class AuthService {
     }
   }
 
+  /**
+   * ⚠️  LOGIN ADMIN TEMPORÁRIO PARA DESENVOLVIMENTO
+   * 
+   * Chama o endpoint de login admin temporário (login_admin_dev.php).
+   * Este método deve ser removido em produção.
+   * 
+   * Credenciais hardcoded:
+   * - Email: admin@viagens.com
+   * - Senha: admin123
+   */
+  loginDev(payload: { email: string; password: string }): Observable<ApiEnvelope<AuthTokenPayload>> {
+    return this.http.post<ApiEnvelope<AuthTokenPayload>>('/login_admin_dev.php', payload).pipe(
+      tap((res) => {
+        if (res.success) {
+          this.persistSession(res.data.token, res.data.user);
+        }
+      }),
+    );
+  }
+
   private persistSession(token: string, user: AuthUser): void {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.userKey, JSON.stringify(user));

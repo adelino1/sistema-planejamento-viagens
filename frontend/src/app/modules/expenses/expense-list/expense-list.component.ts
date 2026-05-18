@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ExpenseService, Expense, CreateExpenseDto } from '../../../services/expense.service';
+import { ExportService } from '../../../services/export.service';
 
 @Component({
   selector: 'app-expense-list',
@@ -8,6 +9,7 @@ import { ExpenseService, Expense, CreateExpenseDto } from '../../../services/exp
   styleUrls: ['./expense-list.component.scss'],
 })
 export class ExpenseListComponent implements OnInit, OnDestroy {
+  protected readonly Object = Object;
   @Input() tripId!: number;
   @Input() currencySymbol = '€';
 
@@ -17,6 +19,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   showForm = false;
   editingExpense: Expense | null = null;
   submitting = false;
+  exporting = false;
 
   totals = {
     totalEstimated: 0,
@@ -26,6 +29,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly expenseService: ExpenseService,
+    private readonly exportService: ExportService,
   ) {}
 
   ngOnInit(): void {
@@ -113,8 +117,42 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   }
 
   get sortedExpenses(): Expense[] {
-    return [...this.expenses].sort((a, b) => 
+    return [...this.expenses].sort((a, b) =>
       new Date(b.expense_date).getTime() - new Date(a.expense_date).getTime()
     );
+  }
+
+  exportToCSV(): void {
+    if (this.expenses.length === 0) {
+      alert('Não há despesas para exportar');
+      return;
+    }
+
+    this.exporting = true;
+    try {
+      this.exportService.exportToCSV(this.expenses, {
+        currencySymbol: this.currencySymbol,
+        tripName: 'Despesas-Viagem',
+      });
+    } finally {
+      this.exporting = false;
+    }
+  }
+
+  async exportToPDF(): Promise<void> {
+    if (this.expenses.length === 0) {
+      alert('Não há despesas para exportar');
+      return;
+    }
+
+    this.exporting = true;
+    try {
+      await this.exportService.exportToPDF(this.expenses, {
+        currencySymbol: this.currencySymbol,
+        tripName: 'Despesas-Viagem',
+      });
+    } finally {
+      this.exporting = false;
+    }
   }
 }

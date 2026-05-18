@@ -1,8 +1,8 @@
 import { APP_INITIALIZER, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { ErrorInterceptor } from '../interceptors/error.interceptor';
@@ -21,10 +21,6 @@ export function languageInitializer(lang: LanguageService): () => void {
   };
 }
 
-export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
-
 /**
  * Módulo raiz de singletons, HTTP e interceptors (importar uma única vez em AppModule).
  */
@@ -34,11 +30,10 @@ export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     HttpClientModule,
     TranslateModule.forRoot({
       defaultLanguage: 'pt',
-      loader: {
-        provide: TranslateLoader,
-        useFactory: httpLoaderFactory,
-        deps: [HttpClient],
-      },
+      loader: provideTranslateHttpLoader({
+        prefix: './assets/i18n/',
+        suffix: '.json',
+      }),
     }),
   ],
   exports: [HttpClientModule, TranslateModule],

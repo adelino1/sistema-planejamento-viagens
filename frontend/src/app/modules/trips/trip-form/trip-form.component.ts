@@ -81,7 +81,7 @@ export class TripFormComponent implements OnInit {
     const raw = this.form.getRawValue();
     const body = {
       ...raw,
-      budget_amount: raw.budget_amount,
+      budget_amount: String(raw.budget_amount),
       description: raw.description.trim() === '' ? null : raw.description,
     };
 

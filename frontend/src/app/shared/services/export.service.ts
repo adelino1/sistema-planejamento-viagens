@@ -52,7 +52,7 @@ export class ExportService {
   /**
    * Exporta uma tabela HTML para PDF.
    */
-  async tableToPDF(tableElement: HTMLElement, options: ExportOptions = {}): Promise<void> {
+  async tableToPDF(tableElement: HTMLElement, options: Partial<ExportOptions> = {}): Promise<void> {
     const {
       filename = 'table.pdf',
       title = 'Export',
@@ -103,7 +103,7 @@ export class ExportService {
   async dataToPDF(
     data: any,
     htmlGenerator: (data: any) => HTMLElement,
-    options: ExportOptions = {}
+    options: Partial<ExportOptions> = {}
   ): Promise<void> {
     const element = htmlGenerator(data);
     document.body.appendChild(element);

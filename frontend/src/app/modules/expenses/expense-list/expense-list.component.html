@@ -1,8 +1,22 @@
 <div class="expense-list">
   <div class="expense-list__header">
     <h2>Despesas</h2>
-    <button class="btn-primary" (click)="toggleForm()" *ngIf="!showForm">
-      + Adicionar Despesa
+    <div class="expense-list__actions">
+      <button class="btn-primary" (click)="toggleForm()" *ngIf="!showForm">
+        + Adicionar Despesa
+      </button>
+    </div>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="expense-list__export" *ngIf="!loading && expenses.length > 0">
+    <button class="btn-secondary" (click)="exportToCSV()" [disabled]="exporting">
+      <span *ngIf="!exporting">📥 Exportar CSV</span>
+      <span *ngIf="exporting">Exportando...</span>
+    </button>
+    <button class="btn-secondary" (click)="exportToPDF()" [disabled]="exporting">
+      <span *ngIf="!exporting">📄 Exportar PDF</span>
+      <span *ngIf="exporting">Exportando...</span>
     </button>
   </div>
 

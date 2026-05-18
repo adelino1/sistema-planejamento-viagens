@@ -20,8 +20,8 @@ export class LanguageService {
     const stored = localStorage.getItem(this.storageKey) as LanguageCode | null;
     const lang: LanguageCode = stored ?? this.getBrowserLanguage() ?? 'pt';
 
-    this.translate.addLanguages(this.supportedLanguages);
-    this.translate.setDefaultLanguage('pt');
+    this.translate.addLangs(this.supportedLanguages);
+    this.translate.setDefaultLang('pt');
     this.setLanguage(lang, false);
   }
 
@@ -53,7 +53,7 @@ export class LanguageService {
    * Retorna o idioma do navegador (se suportado).
    */
   private getBrowserLanguage(): LanguageCode | null {
-    const browserLang = this.translate.getBrowserLanguage() as string | null;
+    const browserLang = this.translate.getBrowserLang() as string | null;
     if (!browserLang) return null;
     const lang = browserLang.substring(0, 2) as LanguageCode;
     return this.supportedLanguages.includes(lang) ? lang : null;

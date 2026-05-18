@@ -1,15 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Services;
-
-use App\Exceptions\HttpException;
+require_once __DIR__ . '/../exceptions/HttpException.php';
 
 /**
  * Integração com OpenWeatherMap API.
  * Requer variável de ambiente: OPENWEATHER_API_KEY
  */
-class WeatherService
+final class WeatherService
 {
     private string $apiKey;
     private string $apiUrl = 'https://api.openweathermap.org/data/2.5';
