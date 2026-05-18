@@ -1,0 +1,80 @@
+<div class="expense-list">
+  <div class="expense-list__header">
+    <h2>Despesas</h2>
+    <button class="btn-primary" (click)="toggleForm()" *ngIf="!showForm">
+      + Adicionar Despesa
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="expense-list__summary" *ngIf="!loading && expenses.length > 0">
+    <div class="expense-summary-card">
+      <span class="expense-summary-card__label">Total Estimado</span>
+      <span class="expense-summary-card__value expense-summary-card__value--estimated">
+        {{ currencySymbol }}{{ totals.totalEstimated.toFixed(2) }}
+      </span>
+    </div>
+    <div class="expense-summary-card">
+      <span class="expense-summary-card__label">Total Real</span>
+      <span class="expense-summary-card__value expense-summary-card__value--actual">
+        {{ currencySymbol }}{{ totals.totalActual.toFixed(2) }}
+      </span>
+    </div>
+    <div class="expense-summary-card">
+      <span class="expense-summary-card__label">Total Geral</span>
+      <span class="expense-summary-card__value">
+        {{ currencySymbol }}{{ (totals.totalEstimated + totals.totalActual).toFixed(2) }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="expense-list__categories" *ngIf="!loading && Object.keys(totals.byCategory).length > 0">
+    <h3>Por Categoria</h3>
+    <div class="category-breakdown">
+      <div class="category-item" *ngFor="let item of totals.byCategory | keyvalue">
+        <span class="category-item__label">{{ getCategoryLabel(item.key) }}</span>
+        <span class="category-item__value">{{ currencySymbol }}{{ item.value.toFixed(2) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <app-expense-form
+    *ngIf="showForm"
+    [expense]="editingExpense"
+    [loading]="submitting"
+    (submit)="onSubmitExpense($event)"
+    (cancel)="onCancelExpense()"
+  ></app-expense-form>
+
+  <!-- Loading State -->
+  <div class="expense-list__loading" *ngIf="loading">
+    <div class="skeleton" style="height: 80px; margin-bottom: 1rem;"></div>
+    <div class="skeleton" style="height: 80px; margin-bottom: 1rem;"></div>
+    <div class="skeleton" style="height: 80px;"></div>
+  </div>
+
+  <!-- Error State -->
+  <div class="expense-list__error" *ngIf="error">
+    {{ error }}
+    <button class="btn-ghost" (click)="loadExpenses()">Tentar novamente</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="expense-list__empty" *ngIf="!loading && !error && expenses.length === 0">
+    <p>Sem despesas registadas para esta viagem.</p>
+    <button class="btn-primary" (click)="toggleForm()">Adicionar Primeira Despesa</button>
+  </div>
+
+  <!-- Expenses List -->
+  <div class="expense-list__items" *ngIf="!loading && !error && expenses.length > 0">
+    <app-expense-card
+      *ngFor="let expense of sortedExpenses"
+      [expense]="expense"
+      [currencySymbol]="currencySymbol"
+      (edit)="onEditExpense($event)"
+      (delete)="onDeleteExpense($event)"
+    ></app-expense-card>
+  </div>
+</div>

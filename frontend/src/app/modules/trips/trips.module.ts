@@ -4,6 +4,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { TripListComponent } from './trip-list/trip-list.component';
 import { TripFormComponent } from './trip-form/trip-form.component';
 import { TripDetailComponent } from './trip-detail/trip-detail.component';
+import { ExpensesModule } from '../expenses/expenses.module';
 
 const routes: Routes = [
   { path: '', component: TripListComponent },
@@ -14,6 +15,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [TripListComponent, TripFormComponent, TripDetailComponent],
-  imports: [SharedModule, RouterModule.forChild(routes)],
+  imports: [SharedModule, RouterModule.forChild(routes), ExpensesModule],
 })
 export class TripsModule {}

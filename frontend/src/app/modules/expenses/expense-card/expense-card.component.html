@@ -1,0 +1,30 @@
+<div class="expense-card">
+  <div class="expense-card__icon">
+    {{ getCategoryIcon(expense.category) }}
+  </div>
+  <div class="expense-card__content">
+    <div class="expense-card__header">
+      <span class="expense-card__category">{{ getCategoryLabel(expense.category) }}</span>
+      <span class="expense-card__type" [class.expense-card__type--estimated]="expense.is_estimated">
+        {{ expense.is_estimated ? 'Estimada' : 'Real' }}
+      </span>
+    </div>
+    <div class="expense-card__description">
+      {{ expense.description || 'Sem descrição' }}
+    </div>
+    <div class="expense-card__meta">
+      <span class="expense-card__date">{{ expense.expense_date | date:'dd/MM/yyyy' }}</span>
+    </div>
+  </div>
+  <div class="expense-card__amount">
+    <span class="expense-card__value">{{ currencySymbol }}{{ expense.amount.toFixed(2) }}</span>
+    <div class="expense-card__actions">
+      <button class="expense-card__action" (click)="onEdit()" title="Editar">
+        ✏️
+      </button>
+      <button class="expense-card__action expense-card__action--danger" (click)="onDelete()" title="Eliminar">
+        🗑️
+      </button>
+    </div>
+  </div>
+</div>
