@@ -1,0 +1,251 @@
+<div class="admin-page fade-in">
+  <div class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Painel de Administração</h1>
+      <p class="page-header__subtitle">Gestão completa do sistema</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="admin-tab" [class.active]="tab() === 'overview'" (click)="tab.set('overview')">
+      <span class="material-icons">dashboard</span> Visão Geral
+    </button>
+    <button class="admin-tab" [class.active]="tab() === 'users'" (click)="tab.set('users')">
+      <span class="material-icons">people</span> Utilizadores
+    </button>
+    <button class="admin-tab" [class.active]="tab() === 'trips'" (click)="tab.set('trips')">
+      <span class="material-icons">luggage</span> Todas as Viagens
+    </button>
+    <button class="admin-tab" [class.active]="tab() === 'logs'" (click)="tab.set('logs')">
+      <span class="material-icons">history</span> Logs do Sistema
+    </button>
+  </div>
+
+  <!-- Overview -->
+  @if (tab() === 'overview') {
+    <div class="overview-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <span class="material-icons">people</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ globalStats().totalUsers }}</div>
+          <div class="stat-card__label">Total Utilizadores</div>
+          <div class="stat-card__delta stat-card__delta--up">
+            <span class="material-icons">arrow_upward</span>
+            {{ globalStats().activeUsers }} activos
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <span class="material-icons">luggage</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ globalStats().totalTrips }}</div>
+          <div class="stat-card__label">Total Viagens</div>
+          <div class="stat-card__delta stat-card__delta--up">
+            <span class="material-icons">arrow_upward</span>
+            {{ globalStats().planned }} planeadas
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <span class="material-icons">check_circle</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ globalStats().completed }}</div>
+          <div class="stat-card__label">Viagens Concluídas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--orange">
+          <span class="material-icons">payments</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ globalStats().totalBudget | number:'1.0-0' }}</div>
+          <div class="stat-card__label">Orçamento Total (USD)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-bottom">
+      <div class="card">
+        <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Últimos Logs</h3></div>
+        <div class="card__body" style="padding:0;">
+          @for (log of systemLogs.slice(0,5); track log.id) {
+            <div class="log-row">
+              <span class="log-row__dot log-row__dot--{{ log.type }}"></span>
+              <div class="log-row__info">
+                <div class="log-row__action">{{ log.action }}</div>
+                <div class="log-row__detail">{{ log.user }} · {{ log.details }}</div>
+              </div>
+              <div class="log-row__time">{{ formatTime(log.timestamp) }}</div>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="card">
+        <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Distribuição de Utilizadores</h3></div>
+        <div class="card__body" style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.83rem;color:var(--text-2);">Clientes</span>
+              <span style="font-weight:700;">{{ globalStats().totalUsers - globalStats().adminCount }}</span>
+            </div>
+            <div class="progress" style="height:8px;">
+              <div class="progress__bar" [style.width.%]="(globalStats().totalUsers - globalStats().adminCount) / globalStats().totalUsers * 100"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.83rem;color:var(--text-2);">Administradores</span>
+              <span style="font-weight:700;">{{ globalStats().adminCount }}</span>
+            </div>
+            <div class="progress" style="height:8px;">
+              <div class="progress__bar" style="background:var(--secondary);" [style.width.%]="globalStats().adminCount / globalStats().totalUsers * 100"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.83rem;color:var(--text-2);">Activos</span>
+              <span style="font-weight:700;">{{ globalStats().activeUsers }}</span>
+            </div>
+            <div class="progress" style="height:8px;">
+              <div class="progress__bar" style="background:var(--success);" [style.width.%]="globalStats().activeUsers / globalStats().totalUsers * 100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Users -->
+  @if (tab() === 'users') {
+    <div class="card">
+      <div class="card__header">
+        <h3 style="font-size:1rem;font-weight:700;">Utilizadores ({{ users().length }})</h3>
+        <div class="search-box" style="width:280px;">
+          <span class="material-icons">search</span>
+          <input type="text" placeholder="Pesquisar..." [value]="userSearch()" (input)="userSearch.set($any($event.target).value)">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Utilizador</th>
+              <th>Email</th>
+              <th>Papel</th>
+              <th>Estado</th>
+              <th>Desde</th>
+              <th>Acções</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    @if (user.avatar) {
+                      <img [src]="user.avatar" [alt]="user.name" class="avatar avatar--sm">
+                    } @else {
+                      <div class="avatar-placeholder avatar-placeholder--sm">{{ user.name[0] }}</div>
+                    }
+                    <div>
+                      <div style="font-weight:700;font-size:0.875rem;">{{ user.name }}</div>
+                      @if (user.country) { <div style="font-size:0.75rem;color:var(--text-2);">{{ user.country }}</div> }
+                    </div>
+                  </div>
+                </td>
+                <td style="font-size:0.83rem;">{{ user.email }}</td>
+                <td>
+                  <span class="badge {{ user.role === 'admin' ? 'badge--primary' : 'badge--secondary' }}">
+                    {{ user.role === 'admin' ? 'Admin' : 'Cliente' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge {{ user.isActive ? 'badge--success' : 'badge--danger' }}">
+                    {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td style="font-size:0.8rem;color:var(--text-2);">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <button class="btn btn--secondary btn--sm btn--icon" (click)="toggleUserStatus(user)" [title]="user.isActive ? 'Desactivar' : 'Activar'">
+                    <span class="material-icons" style="font-size:16px;">{{ user.isActive ? 'block' : 'check_circle' }}</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Trips -->
+  @if (tab() === 'trips') {
+    <div class="card">
+      <div class="card__header">
+        <h3 style="font-size:1rem;font-weight:700;">Todas as Viagens ({{ allTrips().length }})</h3>
+        <div class="search-box" style="width:280px;">
+          <span class="material-icons">search</span>
+          <input type="text" placeholder="Pesquisar..." [value]="tripSearch()" (input)="tripSearch.set($any($event.target).value)">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Viagem</th>
+              <th>Datas</th>
+              <th>Duração</th>
+              <th>Orçamento</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (trip of allTrips(); track trip.id) {
+              <tr [routerLink]="['/trips', trip.id]" style="cursor:pointer;">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <img [src]="trip.coverImage" [alt]="trip.destination" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+                    <div>
+                      <div style="font-weight:700;font-size:0.875rem;">{{ trip.flag }} {{ trip.destination }}</div>
+                      <div style="font-size:0.75rem;color:var(--text-2);">{{ trip.country }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-size:0.8rem;">{{ trip.startDate | date:'dd/MM/yy' }} — {{ trip.endDate | date:'dd/MM/yy' }}</td>
+                <td>{{ getDays(trip) }} dias</td>
+                <td style="font-weight:700;color:var(--primary);">{{ trip.currency }} {{ trip.budget | number:'1.0-0' }}</td>
+                <td><span class="badge {{ statusLabels[trip.status].badge }}">{{ statusLabels[trip.status].label }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Logs -->
+  @if (tab() === 'logs') {
+    <div class="card">
+      <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Logs de Actividade</h3></div>
+      <div class="card__body" style="padding:0;">
+        @for (log of systemLogs; track log.id) {
+          <div class="log-row log-row--full">
+            <span class="log-badge log-badge--{{ log.type }}">{{ log.action }}</span>
+            <div class="log-row__info">
+              <div class="log-row__user">{{ log.user }}</div>
+              <div class="log-row__detail">{{ log.details }}</div>
+            </div>
+            <div class="log-row__time">{{ formatTime(log.timestamp) }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,96 @@
+<div class="layout" [class.sidebar-open]="sidebarOpen()">
+  <!-- Mobile overlay -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-overlay" (click)="toggleMobile()"></div>
+  }
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.sidebar--open]="sidebarOpen()" [class.mobile-open]="mobileMenuOpen()">
+    <div class="sidebar__header">
+      <a routerLink="/dashboard" class="sidebar__brand">
+        <div class="sidebar__logo-icon">
+          <span class="material-icons">flight_takeoff</span>
+        </div>
+        <span class="sidebar__brand-name">TravelPlan</span>
+      </a>
+    </div>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__nav-label">MENU</div>
+      @for (item of navItems(); track item.route) {
+        <a class="sidebar__item" [class.active]="isActive(item.route)"
+          [routerLink]="item.route" (click)="mobileMenuOpen.set(false)">
+          <span class="material-icons sidebar__item-icon">{{ item.icon }}</span>
+          <span class="sidebar__item-label">{{ item.label }}</span>
+          @if (isActive(item.route)) {
+            <div class="sidebar__item-indicator"></div>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar__user" (click)="goToProfile()">
+        @if (user()?.avatar) {
+          <img class="avatar avatar--sm" [src]="user()!.avatar" [alt]="user()!.name">
+        } @else {
+          <div class="avatar-placeholder avatar-placeholder--sm">{{ userInitials() }}</div>
+        }
+        <div class="sidebar__user-info">
+          <div class="sidebar__user-name">{{ user()?.name }}</div>
+          <div class="sidebar__user-role">{{ user()?.role === 'admin' ? 'Administrador' : 'Cliente' }}</div>
+        </div>
+      </div>
+      <button class="sidebar__logout" (click)="logout()" title="Sair">
+        <span class="material-icons">logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__left">
+        <button class="btn btn--icon header__hamburger" (click)="toggleMobile()">
+          <span class="material-icons">menu</span>
+        </button>
+        <button class="btn btn--icon header__toggle hide-mobile" (click)="toggleSidebar()">
+          <span class="material-icons">{{ sidebarOpen() ? 'menu_open' : 'menu' }}</span>
+        </button>
+        <div class="header__title">{{ pageTitle() }}</div>
+      </div>
+
+      <div class="header__right">
+        <div class="search-box header__search hide-mobile">
+          <span class="material-icons">search</span>
+          <input type="text" placeholder="Pesquisar viagens...">
+        </div>
+
+        <button class="btn btn--icon header__action" (click)="toggleTheme()" [title]="isDark() ? 'Modo claro' : 'Modo escuro'">
+          <span class="material-icons">{{ isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+
+        <div class="header__notif">
+          <button class="btn btn--icon header__action">
+            <span class="material-icons">notifications</span>
+          </button>
+          <span class="header__notif-dot"></span>
+        </div>
+
+        <div class="header__user" (click)="goToProfile()">
+          @if (user()?.avatar) {
+            <img class="avatar avatar--md" [src]="user()!.avatar" [alt]="user()!.name">
+          } @else {
+            <div class="avatar-placeholder avatar-placeholder--md">{{ userInitials() }}</div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="content fade-in">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

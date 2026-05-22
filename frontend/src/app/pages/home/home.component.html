@@ -1,4 +1,144 @@
-<app-header></app-header>
-<main>
-  <app-hero></app-hero>
-</main>
+<div class="home">
+  <!-- Navbar -->
+  <nav class="home-nav">
+    <div class="home-nav__brand">
+      <div class="home-nav__logo"><span class="material-icons">flight_takeoff</span></div>
+      <span class="home-nav__name">TravelPlan</span>
+    </div>
+    <div class="home-nav__actions">
+      <button class="btn btn--icon home-nav__theme" (click)="toggleTheme()" [title]="isDark() ? 'Modo claro' : 'Modo escuro'">
+        <span class="material-icons">{{ isDark() ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
+      @if (isAuthenticated()) {
+        <a routerLink="/dashboard" class="btn btn--primary btn--sm">
+          <span class="material-icons">dashboard</span> Dashboard
+        </a>
+      } @else {
+        <a routerLink="/login" class="btn btn--secondary btn--sm">Entrar</a>
+        <a routerLink="/register" class="btn btn--primary btn--sm">
+          <span class="material-icons">person_add</span> Criar conta
+        </a>
+      }
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__bg">
+      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&auto=format&fit=crop&q=80" alt="hero" class="hero__img">
+      <div class="hero__overlay"></div>
+    </div>
+    <div class="hero__content">
+      <div class="hero__badge">
+        <span class="material-icons">auto_awesome</span>
+        Sistema de Planejamento de Viagens
+      </div>
+      <h1 class="hero__title">
+        O Mundo À<br>Sua Espera
+      </h1>
+      <p class="hero__sub">
+        Planeie viagens perfeitas, acompanhe despesas em tempo real<br>
+        e explore os destinos mais incríveis do planeta.
+      </p>
+      <div class="hero__actions">
+        <a routerLink="/register" class="btn btn--primary btn--lg btn--rounded">
+          <span class="material-icons">rocket_launch</span>
+          Começar gratuitamente
+        </a>
+        <a routerLink="/login" class="btn btn--lg btn--rounded hero__ghost">
+          <span class="material-icons">login</span>
+          Entrar na conta
+        </a>
+      </div>
+      <div class="hero__stats">
+        <div class="hero__stat"><span class="hero__stat-val">8+</span><span class="hero__stat-lbl">Destinos</span></div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat"><span class="hero__stat-val">100%</span><span class="hero__stat-lbl">Gratuito</span></div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat"><span class="hero__stat-val">Live</span><span class="hero__stat-lbl">Clima real</span></div>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span class="material-icons">expand_more</span>
+    </div>
+  </section>
+
+  <!-- Destinations -->
+  <section class="section">
+    <div class="section__container">
+      <div class="section__header">
+        <div class="section__tag">
+          <span class="material-icons">explore</span> Destinos
+        </div>
+        <h2 class="section__title">Destinos em Destaque</h2>
+        <p class="section__sub">Explore os destinos mais populares e comece a planear já.</p>
+      </div>
+      <div class="dest-grid">
+        @for (dest of destinations; track dest.name) {
+          <div class="dest-card" [routerLink]="isAuthenticated() ? '/trips' : '/register'">
+            <div class="dest-card__img">
+              <img [src]="dest.img" [alt]="dest.name" loading="lazy">
+              <div class="dest-card__overlay"></div>
+            </div>
+            <div class="dest-card__content">
+              <h3 class="dest-card__name">{{ dest.name }}</h3>
+              <p class="dest-card__country">{{ dest.country }}</p>
+              <p class="dest-card__price">{{ dest.price }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section section--alt">
+    <div class="section__container">
+      <div class="section__header">
+        <div class="section__tag"><span class="material-icons">star</span> Funcionalidades</div>
+        <h2 class="section__title">Tudo o que Precisa</h2>
+        <p class="section__sub">Uma plataforma completa para tornar cada viagem inesquecível.</p>
+      </div>
+      <div class="features-grid">
+        @for (feat of features; track feat.title) {
+          <div class="feat-card">
+            <div class="feat-card__icon">
+              <span class="material-icons">{{ feat.icon }}</span>
+            </div>
+            <h3 class="feat-card__title">{{ feat.title }}</h3>
+            <p class="feat-card__desc">{{ feat.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta__bg">
+      <img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=1920&auto=format&fit=crop&q=70" alt="cta" class="cta__img">
+      <div class="cta__overlay"></div>
+    </div>
+    <div class="cta__content">
+      <h2 class="cta__title">Pronto para a sua<br>Próxima Aventura?</h2>
+      <p class="cta__sub">Junte-se a milhares de viajantes que planeiam as suas viagens com o TravelPlan.</p>
+      <a routerLink="/register" class="btn btn--primary btn--lg btn--rounded">
+        <span class="material-icons">flight_takeoff</span>
+        Criar conta gratuita
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="home-footer">
+    <div class="home-footer__brand">
+      <span class="material-icons">flight_takeoff</span>
+      <span>TravelPlan</span>
+    </div>
+    <p class="home-footer__copy">© 2025 TravelPlan. Sistema de Planejamento de Viagens.</p>
+    <div class="home-footer__links">
+      <a routerLink="/login">Entrar</a>
+      <a routerLink="/register">Registar</a>
+    </div>
+  </footer>
+</div>

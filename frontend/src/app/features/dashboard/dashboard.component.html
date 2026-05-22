@@ -1,0 +1,205 @@
+<div class="dashboard fade-in">
+  <!-- Welcome -->
+  <div class="welcome">
+    <div class="welcome__left">
+      <h1 class="welcome__title">{{ greeting() }}, {{ (user()?.name?.split(' ') ?? [''])[0] }}! 👋</h1>
+      <p class="welcome__sub">Aqui está um resumo das suas viagens e actividades.</p>
+    </div>
+    <a routerLink="/trips" class="btn btn--primary">
+      <span class="material-icons">add</span>
+      Nova Viagem
+    </a>
+  </div>
+
+  @if (loading()) {
+    <app-loader type="cards" [count]="4"></app-loader>
+  } @else {
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <span class="material-icons">luggage</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ stats().total }}</div>
+          <div class="stat-card__label">Total de Viagens</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <span class="material-icons">event_available</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ stats().planned }}</div>
+          <div class="stat-card__label">Planeadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <span class="material-icons">check_circle</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ stats().completed }}</div>
+          <div class="stat-card__label">Concluídas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--orange">
+          <span class="material-icons">payments</span>
+        </div>
+        <div class="stat-card__content">
+          <div class="stat-card__value">{{ stats().totalBudget | number:'1.0-0' }}</div>
+          <div class="stat-card__label">Orçamento Total (USD)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Left column -->
+      <div class="dashboard-main">
+        <!-- Recent trips -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">Viagens Recentes</h3>
+            <a routerLink="/trips" class="btn btn--ghost btn--sm">
+              Ver todas <span class="material-icons" style="font-size:16px;">chevron_right</span>
+            </a>
+          </div>
+          <div class="card__body" style="padding:0;">
+            @if (recentTrips().length === 0) {
+              <div style="padding:40px;text-align:center;color:var(--text-2);">
+                <span style="font-size:3rem;">🌍</span>
+                <p style="margin-top:12px;">Nenhuma viagem criada ainda.</p>
+                <a routerLink="/trips" class="btn btn--primary btn--sm" style="margin-top:12px;">
+                  Criar primeira viagem
+                </a>
+              </div>
+            }
+            @for (trip of recentTrips(); track trip.id) {
+              <a [routerLink]="['/trips', trip.id]" class="trip-row">
+                <div class="trip-row__img">
+                  <img [src]="trip.coverImage" [alt]="trip.destination">
+                </div>
+                <div class="trip-row__info">
+                  <div class="trip-row__dest">{{ trip.flag }} {{ trip.destination }}, {{ trip.country }}</div>
+                  <div class="trip-row__dates">
+                    <span class="material-icons">calendar_today</span>
+                    {{ formatDate(trip.startDate) }} → {{ formatDate(trip.endDate) }}
+                    · {{ getDays(trip) }} dias
+                  </div>
+                </div>
+                <div class="trip-row__right">
+                  <span class="badge {{ getStatusInfo(trip.status).badge }}">
+                    {{ getStatusInfo(trip.status).label }}
+                  </span>
+                  <div class="trip-row__budget">{{ trip.currency }} {{ trip.budget | number:'1.0-0' }}</div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="dashboard-side">
+        <!-- Weather widget -->
+        @if (!weatherLoading() && weather()) {
+          <div class="weather-widget">
+            <div class="weather-widget__icon">{{ weather()!.icon }}</div>
+            <div>
+              <div class="weather-widget__temp">{{ weather()!.temp }}°C</div>
+              <div class="weather-widget__desc">{{ weather()!.description }}</div>
+              <div class="weather-widget__details">
+                <span><span class="material-icons">water_drop</span>{{ weather()!.humidity }}%</span>
+                <span><span class="material-icons">air</span>{{ weather()!.windSpeed }} km/h</span>
+                <span><span class="material-icons">thermostat</span>Sente {{ weather()!.feelsLike }}°C</span>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:0.75rem;color:var(--text-3);margin-top:6px;text-align:right;">
+            Clima actual em {{ weather()!.city }}
+          </p>
+        } @else if (weatherLoading()) {
+          <div class="skeleton" style="height:120px;border-radius:16px;"></div>
+        }
+
+        <!-- Upcoming trips -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">Próximas Viagens</h3>
+          </div>
+          <div class="card__body" style="display:flex;flex-direction:column;gap:14px;">
+            @if (upcomingTrips().length === 0) {
+              <p style="color:var(--text-2);font-size:0.875rem;text-align:center;padding:20px 0;">
+                Nenhuma viagem planeada. ✈️
+              </p>
+            }
+            @for (trip of upcomingTrips(); track trip.id) {
+              <a [routerLink]="['/trips', trip.id]" class="upcoming-item">
+                <div class="upcoming-item__img">
+                  <img [src]="trip.coverImage" [alt]="trip.destination">
+                </div>
+                <div class="upcoming-item__info">
+                  <div class="upcoming-item__dest">{{ trip.flag }} {{ trip.destination }}</div>
+                  <div class="upcoming-item__date">{{ formatDate(trip.startDate) }}</div>
+                  <div class="upcoming-item__countdown">
+                    <span class="material-icons">timer</span>
+                    Em {{ daysUntil(trip.startDate) }} dias
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="card">
+          <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Resumo</h3></div>
+          <div class="card__body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="quick-stat">
+              <span class="quick-stat__label">
+                <span class="status-dot status-dot--planned"></span> Planeadas
+              </span>
+              <div class="quick-stat__right">
+                <span class="quick-stat__val">{{ stats().planned }}</span>
+                <div class="progress" style="width:80px;">
+                  <div class="progress__bar" [style.width.%]="stats().total ? (stats().planned / stats().total) * 100 : 0"></div>
+                </div>
+              </div>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat__label">
+                <span class="status-dot status-dot--ongoing"></span> Em Curso
+              </span>
+              <div class="quick-stat__right">
+                <span class="quick-stat__val">{{ stats().ongoing }}</span>
+                <div class="progress" style="width:80px;">
+                  <div class="progress__bar" style="background:var(--success);" [style.width.%]="stats().total ? (stats().ongoing / stats().total) * 100 : 0"></div>
+                </div>
+              </div>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat__label">
+                <span class="status-dot status-dot--completed"></span> Concluídas
+              </span>
+              <div class="quick-stat__right">
+                <span class="quick-stat__val">{{ stats().completed }}</span>
+                <div class="progress" style="width:80px;">
+                  <div class="progress__bar" style="background:var(--text-3);" [style.width.%]="stats().total ? (stats().completed / stats().total) * 100 : 0"></div>
+                </div>
+              </div>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat__label">
+                <span class="material-icons" style="font-size:12px;color:var(--danger);">favorite</span> Favoritas
+              </span>
+              <div class="quick-stat__right">
+                <span class="quick-stat__val">{{ stats().favorites }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,355 @@
+================================================================================
+  PROMPT — SISTEMA DE PLANEJAMENTO DE VIAGENS
+  Angular + PHP Puro + MySQL | Desenvolvimento Full-Stack em 10 Fases
+================================================================================
+
+
+## IDENTIDADE & PAPEL
+
+Actua como Engenheiro de Software Sénior com 10+ anos de experiência em:
+- Angular (versões recentes, standalone components, signals)
+- PHP puro (sem frameworks) com arquitectura REST profissional
+- MySQL com modelação relacional avançada
+- Segurança: JWT, hashing de passwords, validação de inputs
+- UI/UX profissional de nível SaaS
+
+
+## PROJECTO
+
+Vais desenvolver do zero um sistema completo chamado:
+"Sistema de Planejamento de Viagens"
+
+
+## REGRAS ABSOLUTAS (nunca quebrar)
+
+1. NUNCA resumir ou truncar código — sempre ficheiros 100% completos
+2. SEMPRE indicar o nome e caminho exacto de cada ficheiro
+3. SEMPRE explicar cada bloco de código com comentários
+4. SEMPRE seguir boas práticas e padrões profissionais
+5. SEMPRE terminar a fase com um resumo do que foi implementado
+6. Desenvolvimento dividido OBRIGATORIAMENTE em 10 fases
+7. Nunca pedir confirmação para avançar — gera o código directamente
+
+
+## ESTRUTURA DE CADA FASE
+
+Para cada fase entrega EXACTAMENTE:
+  1. Objectivo da fase (o que vai ser construído e porquê)
+  2. Estrutura de pastas actualizada (árvore de directorias)
+  3. Código COMPLETO de todos os ficheiros (pronto a copiar e colar)
+  4. Localização exacta de cada ficheiro no projecto
+  5. Comandos de execução passo-a-passo
+  6. Resumo final da fase + o que vem na próxima fase
+
+
+## STACK OBRIGATÓRIA
+
+Frontend   : Angular (standalone components) + Angular Material ou Bootstrap
+Backend    : PHP puro — sem qualquer framework (sem Laravel, Slim, etc.)
+Base Dados : MySQL
+Comunicação: HTTP REST com JSON
+Auth       : JWT (JSON Web Tokens)
+
+
+## REQUISITOS DE AUTENTICAÇÃO
+
+- Registo de utilizador com validação completa (nome, email, senha, confirmar senha)
+- Login com geração de JWT
+- Logout com invalidação de token no cliente
+- Recuperação de senha por email (link com token temporário)
+- Dois roles distintos: admin e cliente
+- Guards Angular para proteger rotas privadas
+- Interceptors para anexar JWT em todas as requests HTTP
+
+
+## CRUD COMPLETO (backend + frontend)
+
+VIAGENS:
+  - Criar, listar, editar, eliminar viagens
+  - Upload de imagem de capa
+  - Campos: destino, data início, data fim, descrição, orçamento, estado, imagem
+
+RESERVAS:
+  - Criar, listar, editar, cancelar reservas
+  - Estados: pendente / confirmado / cancelado
+  - Relação com viagem e utilizador
+
+UTILIZADORES:
+  - Admin gere todos os utilizadores (listar, editar role, desactivar, eliminar)
+  - Cliente gere apenas o seu próprio perfil (foto, dados, senha)
+
+
+## PERMISSÕES
+
+ADMIN:
+  - Acesso total a utilizadores, viagens, reservas, relatórios e logs
+  - Pode alterar o role de qualquer utilizador
+  - Vê estatísticas globais do sistema
+
+CLIENTE:
+  - Vê e gere apenas as suas próprias viagens e reservas
+  - Pode editar o seu perfil
+  - Não tem acesso ao painel administrativo
+
+
+## BASE DE DADOS
+
+- Mínimo 3 tabelas com relações entre si
+- Foreign keys e índices correctamente definidos
+- Scripts SQL completos com comentários explicativos
+- Seeds de dados de teste realistas (utilizadores, viagens, reservas)
+- Sugestão de tabelas: users, trips, bookings (+ tabelas auxiliares se necessário)
+
+
+## INTEGRAÇÕES COM APIs EXTERNAS
+
+1. OpenWeather API
+   - Consultar clima actual do destino de cada viagem
+   - Mostrar temperatura, condição e ícone no detalhe da viagem e no dashboard
+
+2. REST Countries API (restcountries.com)
+   - Pesquisa de países e cidades ao criar/editar viagem
+   - Mostrar bandeira, capital, fuso horário e moeda local
+
+
+## INTERFACE / UI / UX
+
+ESTILO VISUAL:
+  - Design moderno estilo SaaS — NÃO básico nem de estudante
+  - Layout limpo, espaçamentos consistentes, tipografia profissional
+  - Cards com sombras leves, bordas arredondadas
+  - Ícones: Angular Material Icons ou Font Awesome
+  - Animações suaves: fade in, hover effects, smooth transitions
+
+MODOS:
+  - Dark mode e Light mode com toggle funcional e persistido (localStorage)
+  - Paleta modo claro: fundo branco, cards brancos, azul como cor principal
+  - Paleta modo escuro: fundo escuro, cards cinza escuro, texto claro
+
+RESPONSIVIDADE (obrigatório funcionar em todos):
+  - Desktop (1280px+)
+  - Tablet (768px–1279px)
+  - Mobile (< 768px)
+  - Navbar responsiva com menu hambúrguer no mobile
+  - Sidebar recolhível com animação
+  - Grid e tabelas adaptáveis
+
+MULTI-IDIOMA:
+  - Português (PT) — idioma por defeito
+  - Inglês (EN)
+  - Toggle de idioma visível na navbar
+  - Ficheiros de tradução: src/assets/i18n/pt.json e en.json
+
+FEEDBACK VISUAL:
+  - Toast notifications (sucesso, erro, aviso)
+  - Loading indicators e skeleton loading
+  - Modais de confirmação em acções destrutivas (eliminar, cancelar)
+  - Pesquisa em tempo real com debounce
+  - Paginação em todas as listagens
+  - Estados vazios (empty states) com mensagem e ilustração
+
+
+## PÁGINAS DO SISTEMA
+
+1. LOGIN
+   - Card centralizado na página
+   - Campo email + campo senha (com mostrar/ocultar)
+   - Botão de login
+   - Link "Esqueci a senha"
+   - Link "Criar conta"
+   - Validação visual em tempo real
+
+2. REGISTO
+   - Campos: nome completo, email, senha, confirmar senha
+   - Validação de força da senha
+   - Botão "Criar Conta"
+   - Link para login
+
+3. DASHBOARD
+   - Cards de estatísticas (total viagens, reservas, pendentes, concluídas)
+   - Gráfico de viagens por mês
+   - Próximas reservas (lista rápida)
+   - Widget de clima do próximo destino
+   - Actividades recentes
+
+4. PÁGINA DE VIAGENS
+   - Listagem em cards ou tabela (toggle entre os dois modos)
+   - Pesquisa em tempo real
+   - Filtros (destino, data, estado, orçamento)
+   - Ordenação por colunas
+   - Botão "Nova Viagem"
+   - Modal de criação/edição
+
+5. DETALHE DA VIAGEM
+   - Imagem de capa
+   - Informações completas da viagem
+   - Widget de clima actual do destino
+   - Lista de reservas associadas
+   - Botão de favorito
+   - Botão de exportar PDF
+   - Mapa (embed simples ou link Google Maps)
+
+6. PERFIL DO UTILIZADOR
+   - Foto de perfil (upload)
+   - Dados pessoais editáveis
+   - Formulário de alteração de senha
+   - Histórico de viagens
+   - Preferências (idioma, tema)
+
+7. PAINEL ADMINISTRATIVO
+   - Gestão completa de utilizadores (tabela, filtros, acções)
+   - Gestão de todas as reservas
+   - Estatísticas globais com gráficos
+   - Logs de actividade do sistema
+   - Geração de relatórios
+
+
+## COMPONENTES REUTILIZÁVEIS (criar todos)
+
+- AppNavbarComponent
+- AppSidebarComponent
+- AppFooterComponent
+- ButtonComponent (variantes: primary, secondary, danger, outline)
+- InputComponent (com label, erro, ícone)
+- TableComponent (com paginação e ordenação)
+- CardComponent
+- ModalComponent
+- LoaderComponent (spinner + skeleton)
+- ToastComponent
+- ConfirmDialogComponent
+- EmptyStateComponent
+
+
+## ARQUITECTURA FRONTEND (Angular)
+
+src/
+  app/
+    core/
+      guards/          # AuthGuard, AdminGuard, GuestGuard
+      interceptors/    # JwtInterceptor, ErrorInterceptor
+      models/          # user.model.ts, trip.model.ts, booking.model.ts
+      services/        # auth.service.ts, trip.service.ts, booking.service.ts
+                       # weather.service.ts, countries.service.ts
+    shared/
+      components/      # Todos os componentes reutilizáveis listados acima
+      pipes/           # date-format.pipe.ts, currency-local.pipe.ts
+      directives/      # click-outside.directive.ts
+    features/
+      auth/            # login, register, forgot-password
+      dashboard/       # dashboard principal
+      trips/           # listagem, detalhe, criação, edição
+      bookings/        # listagem e gestão de reservas
+      profile/         # perfil do utilizador
+      admin/           # painel administrativo
+    layouts/
+      main-layout/     # layout com navbar + sidebar (utilizadores autenticados)
+      auth-layout/     # layout minimalista (login/registo)
+  assets/
+    i18n/              # pt.json, en.json
+    images/            # logos, placeholders
+  environments/        # environment.ts, environment.prod.ts
+
+
+## ARQUITECTURA BACKEND (PHP)
+
+backend/
+  config/
+    database.php       # Conexão PDO ao MySQL
+    cors.php           # Headers CORS
+    jwt.php            # Configuração JWT (secret, expiração)
+  controllers/
+    AuthController.php
+    TripController.php
+    BookingController.php
+    UserController.php
+    WeatherController.php
+    CountryController.php
+    ExportController.php
+  models/
+    User.php
+    Trip.php
+    Booking.php
+  middleware/
+    AuthMiddleware.php   # Valida JWT em rotas protegidas
+    RoleMiddleware.php   # Verifica role (admin/cliente)
+  helpers/
+    JWT.php              # Geração e validação de tokens
+    Response.php         # Respostas JSON padronizadas
+    Validator.php        # Validação de inputs
+    FileUpload.php       # Upload e validação de imagens
+  routes/
+    api.php              # Router principal
+  uploads/               # Imagens de viagens (ignorado no git)
+  index.php              # Ponto de entrada da API
+
+
+## QUALIDADE DO CÓDIGO
+
+- Comentários JSDoc em todos os serviços e componentes Angular
+- PHPDoc em todos os controllers e models
+- Nomes de variáveis e funções em inglês (código); português apenas na UI
+- Separação clara de responsabilidades (Single Responsibility Principle)
+- Tratamento de erros em todas as chamadas HTTP (try/catch + mensagens amigáveis)
+- Validação no frontend E repetida no backend
+- Segurança: sanitização de inputs, prepared statements PDO, headers CORS corretos
+- Password hashing com password_hash() e verificação com password_verify()
+
+
+## EXPORTAÇÃO
+
+PDF:
+  - Layout profissional com cabeçalho, tabelas formatadas e rodapé
+  - Inclui: nome da viagem, destino, datas, reservas, estado
+  - Gerado no browser (Angular) ou via PHP
+
+CSV:
+  - Compatível com Excel e Google Sheets
+  - Exportação de listagens de viagens e reservas
+  - Cabeçalhos em português
+
+
+## GITHUB
+
+- Estratégia de branches: main (produção), develop (integração), feature/* (funcionalidades)
+- Mensagens de commit no padrão Conventional Commits:
+    feat: adicionar autenticação JWT
+    fix: corrigir validação de email no registo
+    chore: configurar estrutura inicial do projecto
+- Exemplo de README.md profissional com badges, instalação e uso
+- Ficheiro .gitignore correcto para Angular + PHP
+
+
+## DOCUMENTAÇÃO FINAL (Fase 10)
+
+- Documento técnico (arquitectura, decisões, stack, justificações)
+- Instruções completas de instalação (pré-requisitos + passo-a-passo)
+- Diagrama ERD da base de dados
+- Lista completa de endpoints da API com método, rota, body e resposta
+- Manual de utilizador (fluxos para admin e para cliente)
+
+
+## AS 10 FASES
+
+FASE 1  — Arquitectura, setup Angular, configuração PHP, MySQL, API base
+FASE 2  — Base de dados: SQL completo, relações, foreign keys, seeds de teste
+FASE 3  — Backend autenticação: JWT, login, registo, recuperação senha, middleware
+FASE 4  — Frontend autenticação: guards, interceptors, UI login/register, validações
+FASE 5  — CRUD completo de Viagens e Reservas (backend + frontend integrados)
+FASE 6  — Integração OpenWeather API + REST Countries API
+FASE 7  — Dashboard, estatísticas, gráficos, painel administrativo
+FASE 8  — Multi-idioma (PT/EN), dark/light mode, responsividade total
+FASE 9  — Exportação PDF e CSV, relatórios
+FASE 10 — Deploy, GitHub (commits + README), documentação técnica final
+
+
+## INICIA AGORA
+
+Começa IMEDIATAMENTE pela FASE 1.
+Segue todas as regras acima sem excepção.
+Não peças confirmação — avança directamente para o código.
+Gera todos os ficheiros completos, sem omissões.
+
+================================================================================
+  Para avançar entre fases escreva: "Continua com a Fase X"
+  Se a resposta foi cortada escreva: "Continua de onde paraste"
+================================================================================

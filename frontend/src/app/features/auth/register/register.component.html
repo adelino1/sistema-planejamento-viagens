@@ -1,0 +1,110 @@
+<div class="auth-page">
+  <div class="auth-bg">
+    <img src="https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=1920&auto=format&fit=crop&q=80" alt="" class="auth-bg__img">
+    <div class="auth-bg__overlay"></div>
+    <div class="auth-bg__content">
+      <h1 class="auth-bg__title">Junte-se à<br>Aventura</h1>
+      <p class="auth-bg__sub">Comece a planear a viagem dos seus sonhos hoje.</p>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-panel__inner">
+      <div class="auth-panel__header">
+        <a routerLink="/" class="auth-brand">
+          <div class="auth-brand__icon"><span class="material-icons">flight_takeoff</span></div>
+          <span class="auth-brand__name">TravelPlan</span>
+        </a>
+        <button class="btn btn--icon btn--secondary" (click)="toggleTheme()">
+          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+      </div>
+
+      <div class="auth-form">
+        <div class="auth-form__head">
+          <h2 class="auth-form__title">Criar conta</h2>
+          <p class="auth-form__sub">É gratuito. Comece já.</p>
+        </div>
+
+        @if (error()) {
+          <div class="auth-error">
+            <span class="material-icons">error_outline</span>
+            {{ error() }}
+          </div>
+        }
+
+        <div class="auth-fields">
+          <div class="form-group">
+            <label>Nome completo</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">person</span>
+              <input class="form-control" type="text" placeholder="João Silva" [(ngModel)]="name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">email</span>
+              <input class="form-control" type="email" placeholder="seuemail@exemplo.com" [(ngModel)]="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Senha</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock</span>
+              <input class="form-control" [type]="showPass() ? 'text' : 'password'"
+                placeholder="Mínimo 6 caracteres" [(ngModel)]="password" style="padding-right:44px;">
+              <button class="pass-toggle" type="button" (click)="showPass.set(!showPass())">
+                <span class="material-icons">{{ showPass() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+            @if (password()) {
+              <div class="pass-strength">
+                <div class="pass-strength__bars">
+                  @for (i of [1,2,3,4]; track i) {
+                    <div class="pass-strength__bar" [class.active]="passwordStrength() >= i"
+                      [style.background]="passwordStrength() >= i ? strengthColor() : ''"></div>
+                  }
+                </div>
+                <span class="pass-strength__label" [style.color]="strengthColor()">{{ strengthLabel() }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Confirmar senha</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock_outline</span>
+              <input class="form-control" [type]="showConfirm() ? 'text' : 'password'"
+                placeholder="Repita a senha" [(ngModel)]="confirmPassword"
+                (keyup.enter)="register()" style="padding-right:44px;"
+                [class.form-control--error]="confirmPassword() && password() !== confirmPassword()">
+              <button class="pass-toggle" type="button" (click)="showConfirm.set(!showConfirm())">
+                <span class="material-icons">{{ showConfirm() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+            @if (confirmPassword() && password() !== confirmPassword()) {
+              <span class="form-error">As senhas não coincidem</span>
+            }
+          </div>
+
+          <button class="btn btn--primary btn--full btn--lg" (click)="register()" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner spinner--sm"></span> A criar conta...
+            } @else {
+              <span class="material-icons">person_add</span>
+              Criar conta
+            }
+          </button>
+        </div>
+
+        <div class="auth-divider"><span>Já tem conta?</span></div>
+        <a routerLink="/login" class="btn btn--outline btn--full">
+          <span class="material-icons">login</span> Entrar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

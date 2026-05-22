@@ -1,0 +1,226 @@
+<div class="profile-page fade-in">
+  <!-- Header card -->
+  <div class="profile-hero">
+    <div class="profile-hero__cover">
+      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&auto=format&fit=crop&q=60" alt="">
+    </div>
+    <div class="profile-hero__body">
+      <div class="profile-hero__avatar">
+        @if (user().avatar) {
+          <img [src]="user().avatar" [alt]="user().name" class="avatar avatar--2xl">
+        } @else {
+          <div class="avatar-placeholder avatar-placeholder--2xl">{{ initials() }}</div>
+        }
+        <div class="profile-hero__role-badge">
+          <span class="badge {{ user().role === 'admin' ? 'badge--primary' : 'badge--secondary' }}">
+            {{ user().role === 'admin' ? '👑 Admin' : '✈️ Viajante' }}
+          </span>
+        </div>
+      </div>
+      <div class="profile-hero__info">
+        <h1 class="profile-hero__name">{{ user().name }}</h1>
+        <p class="profile-hero__email">{{ user().email }}</p>
+        @if (user().bio) {
+          <p class="profile-hero__bio">{{ user().bio }}</p>
+        }
+      </div>
+      <div class="profile-hero__stats">
+        <div class="profile-stat">
+          <div class="profile-stat__val">{{ stats().total }}</div>
+          <div class="profile-stat__lbl">Viagens</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">{{ stats().completed }}</div>
+          <div class="profile-stat__lbl">Concluídas</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">{{ stats().favorites }}</div>
+          <div class="profile-stat__lbl">Favoritas</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">{{ stats().totalBudget | number:'1.0-0' }}</div>
+          <div class="profile-stat__lbl">Orçamento Total</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="profile-tabs">
+    <button class="profile-tab" [class.active]="tab() === 'info'" (click)="tab.set('info')">
+      <span class="material-icons">person</span> Informações
+    </button>
+    <button class="profile-tab" [class.active]="tab() === 'security'" (click)="tab.set('security')">
+      <span class="material-icons">lock</span> Segurança
+    </button>
+    <button class="profile-tab" [class.active]="tab() === 'trips'" (click)="tab.set('trips')">
+      <span class="material-icons">luggage</span> Histórico
+    </button>
+    <button class="profile-tab" [class.active]="tab() === 'prefs'" (click)="tab.set('prefs')">
+      <span class="material-icons">tune</span> Preferências
+    </button>
+  </div>
+
+  <!-- Tab: Info -->
+  @if (tab() === 'info') {
+    <div class="card">
+      <div class="card__header">
+        <h3 style="font-size:1rem;font-weight:700;">Dados Pessoais</h3>
+      </div>
+      <div class="card__body">
+        <div class="profile-form-grid">
+          <div class="form-group">
+            <label>Nome completo</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">person</span>
+              <input class="form-control" type="text" [value]="form().name" (input)="updateForm('name', $any($event.target).value)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">email</span>
+              <input class="form-control" type="email" [value]="form().email" disabled style="opacity:0.6;cursor:not-allowed;">
+            </div>
+            <span class="form-hint">O email não pode ser alterado.</span>
+          </div>
+          <div class="form-group">
+            <label>Telefone</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">phone</span>
+              <input class="form-control" type="tel" placeholder="+244 923 000 000" [value]="form().phone" (input)="updateForm('phone', $any($event.target).value)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>País</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">public</span>
+              <input class="form-control" type="text" placeholder="ex: Angola" [value]="form().country" (input)="updateForm('country', $any($event.target).value)">
+            </div>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label>Biografia</label>
+            <textarea class="form-control" rows="3" placeholder="Conte um pouco sobre si..." [value]="form().bio" (input)="updateForm('bio', $any($event.target).value)"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+          <button class="btn btn--primary" (click)="saveProfile()" [disabled]="saving()">
+            @if (saving()) { <span class="spinner spinner--sm"></span> }
+            <span class="material-icons">save</span>
+            Guardar alterações
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tab: Security -->
+  @if (tab() === 'security') {
+    <div class="card">
+      <div class="card__header">
+        <h3 style="font-size:1rem;font-weight:700;">Alterar Senha</h3>
+      </div>
+      <div class="card__body" style="max-width:480px;">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-group">
+            <label>Senha actual</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock</span>
+              <input class="form-control" [type]="showPass().current ? 'text' : 'password'"
+                placeholder="Senha actual" [value]="passForm().current"
+                (input)="setPassField('current', $any($event.target).value)"
+                style="padding-right:44px;">
+              <button class="pass-toggle" (click)="toggleShowField('current')">
+                <span class="material-icons">{{ showPass().current ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nova senha</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock_open</span>
+              <input class="form-control" [type]="showPass().newPass ? 'text' : 'password'"
+                placeholder="Nova senha" [value]="passForm().newPass"
+                (input)="setPassField('newPass', $any($event.target).value)"
+                style="padding-right:44px;">
+              <button class="pass-toggle" (click)="toggleShowField('newPass')">
+                <span class="material-icons">{{ showPass().newPass ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmar nova senha</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock_outline</span>
+              <input class="form-control" [type]="showPass().confirm ? 'text' : 'password'"
+                placeholder="Confirmar nova senha" [value]="passForm().confirm"
+                (input)="setPassField('confirm', $any($event.target).value)"
+                style="padding-right:44px;">
+              <button class="pass-toggle" (click)="toggleShowField('confirm')">
+                <span class="material-icons">{{ showPass().confirm ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+          <button class="btn btn--primary" (click)="savePassword()" [disabled]="savingPass()">
+            @if (savingPass()) { <span class="spinner spinner--sm"></span> }
+            Alterar senha
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tab: Trips -->
+  @if (tab() === 'trips') {
+    <div class="card">
+      <div class="card__header">
+        <h3 style="font-size:1rem;font-weight:700;">Histórico de Viagens ({{ userTrips().length }})</h3>
+      </div>
+      <div class="card__body" style="padding:0;">
+        @if (userTrips().length === 0) {
+          <div style="padding:40px;text-align:center;color:var(--text-2);">
+            Ainda não tem viagens. <a routerLink="/trips" style="color:var(--primary);">Criar uma agora?</a>
+          </div>
+        }
+        @for (trip of userTrips(); track trip.id) {
+          <div class="history-row">
+            <img [src]="trip.coverImage" [alt]="trip.destination" class="history-row__img">
+            <div class="history-row__info">
+              <div class="history-row__dest">{{ trip.flag }} {{ trip.destination }}, {{ trip.country }}</div>
+              <div class="history-row__dates">{{ formatDate(trip.startDate) }} · {{ getDays(trip) }} dias</div>
+            </div>
+            <div class="history-row__right">
+              <span class="badge badge--secondary">{{ trip.currency }} {{ trip.budget | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Tab: Preferences -->
+  @if (tab() === 'prefs') {
+    <div class="card">
+      <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Preferências</h3></div>
+      <div class="card__body" style="display:flex;flex-direction:column;gap:20px;">
+        <div class="pref-row">
+          <div class="pref-row__info">
+            <div class="pref-row__label">Modo escuro</div>
+            <div class="pref-row__desc">Alterna entre tema claro e escuro.</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" [checked]="isDark()" (change)="toggleTheme()">
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+        <div class="divider"></div>
+        <div class="pref-row">
+          <div class="pref-row__info">
+            <div class="pref-row__label">Membro desde</div>
+            <div class="pref-row__desc">{{ formatDate(user().createdAt) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

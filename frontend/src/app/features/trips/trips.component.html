@@ -1,0 +1,272 @@
+<div class="trips-page fade-in">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Minhas Viagens</h1>
+      <p class="page-header__subtitle">{{ filtered().length }} {{ filtered().length === 1 ? 'viagem encontrada' : 'viagens encontradas' }}</p>
+    </div>
+    <div class="page-header__actions">
+      <button class="btn btn--secondary btn--icon" (click)="viewMode.set('grid')" [class.active]="viewMode() === 'grid'" title="Grelha">
+        <span class="material-icons">grid_view</span>
+      </button>
+      <button class="btn btn--secondary btn--icon" (click)="viewMode.set('list')" [class.active]="viewMode() === 'list'" title="Lista">
+        <span class="material-icons">view_list</span>
+      </button>
+      <button class="btn btn--primary" (click)="openCreate()">
+        <span class="material-icons">add</span>
+        Nova Viagem
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="search-box" style="flex:1;max-width:360px;">
+      <span class="material-icons">search</span>
+      <input type="text" placeholder="Pesquisar por destino, país..." [value]="search()" (input)="onSearch($event)">
+    </div>
+    <select class="form-control" style="width:160px;" [value]="statusFilter()" (change)="statusFilter.set($any($event.target).value); page.set(1)">
+      <option value="">Todos os estados</option>
+      <option value="planned">Planeadas</option>
+      <option value="ongoing">Em Curso</option>
+      <option value="completed">Concluídas</option>
+      <option value="cancelled">Canceladas</option>
+    </select>
+    <select class="form-control" style="width:180px;" [value]="sort()" (change)="sort.set($any($event.target).value)">
+      <option value="created_desc">Mais recentes</option>
+      <option value="date_asc">Data (crescente)</option>
+      <option value="date_desc">Data (decrescente)</option>
+      <option value="budget_asc">Orçamento (menor)</option>
+      <option value="budget_desc">Orçamento (maior)</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <app-loader type="cards" [count]="6"></app-loader>
+  } @else if (filtered().length === 0) {
+    <app-empty-state
+      icon="✈️"
+      title="Nenhuma viagem encontrada"
+      [description]="search() ? 'Tente uma pesquisa diferente.' : 'Comece a planear a sua próxima aventura!'"
+      actionLabel="Nova Viagem"
+      actionIcon="add"
+      (action)="openCreate()">
+    </app-empty-state>
+  } @else {
+    <!-- Grid view -->
+    @if (viewMode() === 'grid') {
+      <div class="grid grid--auto">
+        @for (trip of paginated(); track trip.id) {
+          <div class="trip-card" (click)="goToDetail(trip.id)">
+            <div class="trip-card__img">
+              <img [src]="trip.coverImage" [alt]="trip.destination" loading="lazy">
+              <button class="trip-card__fav" (click)="toggleFav(trip, $event)" [title]="trip.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+                <span class="material-icons" [style.color]="trip.isFavorite ? 'var(--danger)' : 'var(--text-3)'">
+                  {{ trip.isFavorite ? 'favorite' : 'favorite_border' }}
+                </span>
+              </button>
+              <div class="trip-card__badge">
+                <span class="badge {{ statusLabels[trip.status].badge }}">{{ statusLabels[trip.status].label }}</span>
+              </div>
+            </div>
+            <div class="trip-card__body">
+              <div class="trip-card__destination">{{ trip.flag }} {{ trip.destination }}</div>
+              <div class="trip-card__country">
+                <span class="material-icons">place</span>{{ trip.country }}
+              </div>
+              <div class="trip-card__dates">
+                <span class="material-icons">calendar_today</span>
+                {{ trip.startDate | date:'dd MMM' }} — {{ trip.endDate | date:'dd MMM yyyy' }}
+              </div>
+              <div class="trip-card__footer">
+                <div class="trip-card__budget">{{ trip.currency }} {{ trip.budget | number:'1.0-0' }}</div>
+                <div class="trip-card__days">{{ getDays(trip) }} dias</div>
+              </div>
+            </div>
+            <div class="trip-card__actions">
+              <button class="btn btn--ghost btn--sm" (click)="openEdit(trip, $event)">
+                <span class="material-icons">edit</span> Editar
+              </button>
+              <button class="btn btn--ghost btn--sm" style="color:var(--danger);" (click)="confirmDelete(trip.id, $event)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- List view -->
+    @if (viewMode() === 'list') {
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Destino</th>
+                <th>Datas</th>
+                <th>Duração</th>
+                <th>Orçamento</th>
+                <th>Estado</th>
+                <th>Acções</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (trip of paginated(); track trip.id) {
+                <tr style="cursor:pointer;" (click)="goToDetail(trip.id)">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <img [src]="trip.coverImage" [alt]="trip.destination" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;">
+                      <div>
+                        <div style="font-weight:700;">{{ trip.flag }} {{ trip.destination }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-2);">{{ trip.country }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="font-size:0.83rem;">{{ trip.startDate | date:'dd/MM/yy' }} — {{ trip.endDate | date:'dd/MM/yy' }}</td>
+                  <td>{{ getDays(trip) }} dias</td>
+                  <td style="font-weight:700;color:var(--primary);">{{ trip.currency }} {{ trip.budget | number:'1.0-0' }}</td>
+                  <td><span class="badge {{ statusLabels[trip.status].badge }}">{{ statusLabels[trip.status].label }}</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;" (click)="$event.stopPropagation()">
+                      <button class="btn btn--icon btn--secondary btn--sm" (click)="openEdit(trip, $event)">
+                        <span class="material-icons" style="font-size:16px;">edit</span>
+                      </button>
+                      <button class="btn btn--icon btn--secondary btn--sm" style="color:var(--danger);" (click)="confirmDelete(trip.id, $event)">
+                        <span class="material-icons" style="font-size:16px;">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button (click)="setPage(page() - 1)" [disabled]="page() === 1">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        @for (p of pages(); track p) {
+          <button (click)="setPage(p)" [class.active]="page() === p">{{ p }}</button>
+        }
+        <button (click)="setPage(page() + 1)" [disabled]="page() === totalPages()">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+    }
+  }
+
+  <!-- Create/Edit Modal -->
+  @if (showModal()) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal modal--lg" (click)="$event.stopPropagation()">
+        <div class="modal__header">
+          <h3 class="modal__title">{{ editTrip() ? 'Editar Viagem' : 'Nova Viagem' }}</h3>
+          <button class="modal__close" (click)="closeModal()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal__body">
+          <div class="modal-grid">
+            <div class="form-group">
+              <label>Destino *</label>
+              <div class="input-group">
+                <span class="material-icons input-icon">place</span>
+                <input class="form-control" type="text" placeholder="ex: Paris" [value]="form().destination" (input)="updateForm('destination', $any($event.target).value)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>País *</label>
+              <div class="input-group">
+                <span class="material-icons input-icon">flag</span>
+                <input class="form-control" type="text" placeholder="ex: França" [value]="form().country" (input)="updateForm('country', $any($event.target).value)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Data de Início *</label>
+              <input class="form-control" type="date" [value]="form().startDate" (change)="updateForm('startDate', $any($event.target).value)">
+            </div>
+            <div class="form-group">
+              <label>Data de Fim *</label>
+              <input class="form-control" type="date" [value]="form().endDate" (change)="updateForm('endDate', $any($event.target).value)">
+            </div>
+            <div class="form-group">
+              <label>Orçamento *</label>
+              <div class="input-group">
+                <span class="material-icons input-icon">attach_money</span>
+                <input class="form-control" type="number" placeholder="0" [value]="form().budget" (input)="updateForm('budget', $any($event.target).value)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Moeda</label>
+              <select class="form-control" [value]="form().currency" (change)="updateForm('currency', $any($event.target).value)">
+                @for (c of currencies; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <select class="form-control" [value]="form().status" (change)="updateForm('status', $any($event.target).value)">
+                @for (s of statusOptions; track s) {
+                  <option [value]="s">{{ statusLabels[s].label }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Participantes</label>
+              <input class="form-control" type="number" min="1" [value]="form().participants" (input)="updateForm('participants', $any($event.target).value)">
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label>Descrição</label>
+              <textarea class="form-control" rows="3" placeholder="Descreva a viagem..." [value]="form().description" (input)="updateForm('description', $any($event.target).value)"></textarea>
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label>Actividades (separadas por vírgula)</label>
+              <input class="form-control" type="text" placeholder="Torre Eiffel, Louvre, Versalhes..."
+                [value]="activitiesInput()" (input)="activitiesInput.set($any($event.target).value)">
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label>Imagem de capa</label>
+              <div class="cover-picker">
+                @for (img of coverImages; track img) {
+                  <div class="cover-option" [class.selected]="form().coverImage === img" (click)="updateForm('coverImage', img)">
+                    <img [src]="img" alt="cover option">
+                    @if (form().coverImage === img) {
+                      <div class="cover-option__check"><span class="material-icons">check</span></div>
+                    }
+                  </div>
+                }
+              </div>
+              <input class="form-control mt-2" type="url" placeholder="Ou cole o URL de uma imagem..."
+                [value]="form().coverImage" (input)="updateForm('coverImage', $any($event.target).value)">
+            </div>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button class="btn btn--secondary" (click)="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" (click)="save()" [disabled]="saving()">
+            @if (saving()) { <span class="spinner spinner--sm"></span> }
+            {{ editTrip() ? 'Guardar alterações' : 'Criar viagem' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Confirm delete -->
+  <app-confirm-dialog
+    [show]="showConfirm()"
+    title="Eliminar viagem"
+    message="Tem a certeza que deseja eliminar esta viagem? Esta acção é irreversível."
+    confirmLabel="Eliminar"
+    [loading]="deleting()"
+    (confirmed)="doDelete()"
+    (cancelled)="showConfirm.set(false)">
+  </app-confirm-dialog>
+</div>

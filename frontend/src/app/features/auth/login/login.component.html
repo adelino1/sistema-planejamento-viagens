@@ -1,0 +1,100 @@
+<div class="auth-page">
+  <!-- Background -->
+  <div class="auth-bg">
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&auto=format&fit=crop&q=80" alt="background" class="auth-bg__img">
+    <div class="auth-bg__overlay"></div>
+    <div class="auth-bg__content">
+      <h1 class="auth-bg__title">O Mundo<br>À Sua Espera</h1>
+      <p class="auth-bg__sub">Planeie, explore e viva aventuras inesquecíveis.</p>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="auth-panel">
+    <div class="auth-panel__inner">
+      <!-- Header -->
+      <div class="auth-panel__header">
+        <a routerLink="/" class="auth-brand">
+          <div class="auth-brand__icon">
+            <span class="material-icons">flight_takeoff</span>
+          </div>
+          <span class="auth-brand__name">TravelPlan</span>
+        </a>
+        <button class="btn btn--icon btn--secondary" (click)="toggleTheme()" title="Mudar tema">
+          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+      </div>
+
+      <!-- Form -->
+      <div class="auth-form">
+        <div class="auth-form__head">
+          <h2 class="auth-form__title">Entrar na conta</h2>
+          <p class="auth-form__sub">Bem-vindo de volta! Insira os seus dados.</p>
+        </div>
+
+        <!-- Demo hint -->
+        <div class="auth-demo-hint">
+          <span class="material-icons">info</span>
+          <div>
+            <strong>Demo:</strong> admin&#64;travelplan.ao / password
+            <div class="text-xs mt-1" style="opacity:0.8">Ou crie uma nova conta gratuitamente.</div>
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="auth-error">
+            <span class="material-icons">error_outline</span>
+            {{ error() }}
+          </div>
+        }
+
+        <div class="auth-fields">
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-group">
+              <span class="material-icons input-icon">email</span>
+              <input class="form-control" type="email" placeholder="seuemail@exemplo.com"
+                [(ngModel)]="email" (keyup.enter)="login()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Senha</label>
+            <div class="input-group" style="position:relative;">
+              <span class="material-icons input-icon">lock</span>
+              <input class="form-control" [type]="showPass() ? 'text' : 'password'"
+                placeholder="A sua senha" [(ngModel)]="password" (keyup.enter)="login()"
+                style="padding-right: 44px;">
+              <button class="pass-toggle" type="button" (click)="showPass.set(!showPass())">
+                <span class="material-icons">{{ showPass() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-row">
+            <a routerLink="/" class="auth-link">Esqueceu a senha?</a>
+          </div>
+
+          <button class="btn btn--primary btn--full btn--lg" (click)="login()" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner spinner--sm"></span>
+              A entrar...
+            } @else {
+              <span class="material-icons">login</span>
+              Entrar
+            }
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>Novo no TravelPlan?</span>
+        </div>
+
+        <a routerLink="/register" class="btn btn--outline btn--full">
+          <span class="material-icons">person_add</span>
+          Criar conta gratuita
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

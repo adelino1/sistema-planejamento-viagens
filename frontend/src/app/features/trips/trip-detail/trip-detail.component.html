@@ -1,0 +1,341 @@
+@if (loading()) {
+  <div class="loader-center" style="padding:80px;"><div class="spinner spinner--lg"></div></div>
+} @else if (trip()) {
+  <div class="trip-detail fade-in">
+    <!-- Hero -->
+    <div class="trip-hero">
+      <img [src]="trip()!.coverImage" [alt]="trip()!.destination" class="trip-hero__img">
+      <div class="trip-hero__overlay"></div>
+      <div class="trip-hero__content">
+        <a routerLink="/trips" class="btn btn--secondary btn--sm trip-hero__back">
+          <span class="material-icons">arrow_back</span> Voltar
+        </a>
+        <div class="trip-hero__info">
+          <div class="trip-hero__flag">{{ trip()!.flag }}</div>
+          <h1 class="trip-hero__title">{{ trip()!.destination }}</h1>
+          <p class="trip-hero__country">{{ trip()!.country }}</p>
+          <span class="badge {{ statusLabels[trip()!.status].badge }}">{{ statusLabels[trip()!.status].label }}</span>
+        </div>
+        <div class="trip-hero__actions">
+          <button class="btn btn--secondary btn--sm" (click)="toggleFav()">
+            <span class="material-icons" [style.color]="trip()!.isFavorite ? 'var(--danger)' : ''">
+              {{ trip()!.isFavorite ? 'favorite' : 'favorite_border' }}
+            </span>
+            {{ trip()!.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos' }}
+          </button>
+          <button class="btn btn--secondary btn--sm" (click)="openMaps()">
+            <span class="material-icons">map</span> Ver no mapa
+          </button>
+          <button class="btn btn--danger btn--sm" (click)="confirmDeleteTrip()">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trip-body">
+      <!-- Left column -->
+      <div class="trip-left">
+        <!-- Quick stats -->
+        <div class="trip-stats">
+          <div class="trip-stat">
+            <span class="material-icons trip-stat__icon" style="color:var(--primary);">calendar_today</span>
+            <div>
+              <div class="trip-stat__val">{{ getDays() }} dias</div>
+              <div class="trip-stat__lbl">Duração</div>
+            </div>
+          </div>
+          <div class="trip-stat">
+            <span class="material-icons trip-stat__icon" style="color:var(--success);">payments</span>
+            <div>
+              <div class="trip-stat__val">{{ trip()!.currency }} {{ trip()!.budget | number:'1.0-0' }}</div>
+              <div class="trip-stat__lbl">Orçamento</div>
+            </div>
+          </div>
+          <div class="trip-stat">
+            <span class="material-icons trip-stat__icon" style="color:var(--secondary);">people</span>
+            <div>
+              <div class="trip-stat__val">{{ trip()!.participants }}</div>
+              <div class="trip-stat__lbl">Participantes</div>
+            </div>
+          </div>
+          <div class="trip-stat">
+            <span class="material-icons trip-stat__icon" style="color:var(--warning);">receipt_long</span>
+            <div>
+              <div class="trip-stat__val">{{ trip()!.currency }} {{ totalExpenses() | number:'1.0-0' }}</div>
+              <div class="trip-stat__lbl">Despesas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">
+              <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary);">calendar_month</span>
+              Datas da Viagem
+            </h3>
+          </div>
+          <div class="card__body" style="display:flex;gap:24px;flex-wrap:wrap;">
+            <div class="date-block">
+              <div class="date-block__label">Partida</div>
+              <div class="date-block__date">{{ formatDate(trip()!.startDate) }}</div>
+            </div>
+            <div style="display:flex;align-items:center;color:var(--text-3);">
+              <span class="material-icons">east</span>
+            </div>
+            <div class="date-block">
+              <div class="date-block__label">Regresso</div>
+              <div class="date-block__date">{{ formatDate(trip()!.endDate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        @if (trip()!.description) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">
+                <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary);">description</span>
+                Descrição
+              </h3>
+            </div>
+            <div class="card__body">
+              <p style="color:var(--text-2);line-height:1.75;font-size:0.9rem;">{{ trip()!.description }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Activities -->
+        @if (trip()!.activities.length > 0) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">
+                <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary);">attractions</span>
+                Actividades Planeadas
+              </h3>
+            </div>
+            <div class="card__body">
+              <div class="activities-list">
+                @for (act of trip()!.activities; track act) {
+                  <div class="activity-item">
+                    <span class="material-icons">check_circle</span>
+                    {{ act }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Expenses -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">
+              <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary);">receipt_long</span>
+              Despesas ({{ expenses().length }})
+            </h3>
+            <button class="btn btn--primary btn--sm" (click)="openExpenseModal()">
+              <span class="material-icons">add</span> Adicionar
+            </button>
+          </div>
+          <div class="card__body" style="padding:0;">
+            @if (expenses().length === 0) {
+              <div style="padding:32px;text-align:center;color:var(--text-2);">
+                <span style="font-size:2.5rem;">💳</span>
+                <p style="margin-top:10px;font-size:0.875rem;">Nenhuma despesa registada ainda.</p>
+              </div>
+            }
+            @for (exp of expenses(); track exp.id) {
+              <div class="expense-row">
+                <div class="expense-row__cat">
+                  <span class="material-icons">{{ getCategoryIcon(exp.category) }}</span>
+                </div>
+                <div class="expense-row__info">
+                  <div class="expense-row__desc">{{ exp.description }}</div>
+                  <div class="expense-row__meta">
+                    {{ getCategoryLabel(exp.category) }} · {{ exp.paidBy }} · {{ exp.date | date:'dd/MM/yyyy' }}
+                  </div>
+                </div>
+                <div class="expense-row__amount">{{ exp.currency }} {{ exp.amount | number:'1.2-2' }}</div>
+                <button class="btn btn--icon btn--ghost expense-row__del" (click)="deleteExpense(exp.id)" style="color:var(--danger);">
+                  <span class="material-icons" style="font-size:16px;">delete</span>
+                </button>
+              </div>
+            }
+            @if (expenses().length > 0) {
+              <div class="expense-total">
+                <span>Total</span>
+                <strong>{{ trip()!.currency }} {{ totalExpenses() | number:'1.2-2' }}</strong>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="trip-right">
+        <!-- Weather -->
+        @if (!weatherLoading() && weather()) {
+          <div class="weather-widget">
+            <div class="weather-widget__icon">{{ weather()!.icon }}</div>
+            <div style="flex:1;">
+              <div style="font-size:0.75rem;opacity:0.75;margin-bottom:2px;">Clima actual em {{ weather()!.city }}</div>
+              <div class="weather-widget__temp">{{ weather()!.temp }}°C</div>
+              <div class="weather-widget__desc">{{ weather()!.description }}</div>
+              <div class="weather-widget__details">
+                <span><span class="material-icons">water_drop</span>{{ weather()!.humidity }}%</span>
+                <span><span class="material-icons">air</span>{{ weather()!.windSpeed }} km/h</span>
+                <span><span class="material-icons">thermostat</span>Sente {{ weather()!.feelsLike }}°C</span>
+              </div>
+            </div>
+          </div>
+        } @else if (weatherLoading()) {
+          <div class="skeleton" style="height:130px;border-radius:16px;"></div>
+        }
+
+        <!-- Budget breakdown -->
+        @if (expenses().length > 0) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">Despesas por Categoria</h3>
+            </div>
+            <div class="card__body" style="display:flex;flex-direction:column;gap:12px;">
+              @for (cat of categories; track cat.value) {
+                @if (expensesByCat()[cat.value]) {
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                      <span style="font-size:0.8rem;color:var(--text-2);display:flex;align-items:center;gap:6px;">
+                        <span class="material-icons" style="font-size:14px;">{{ cat.icon }}</span>{{ cat.label }}
+                      </span>
+                      <span style="font-size:0.8rem;font-weight:700;">{{ trip()!.currency }} {{ expensesByCat()[cat.value] | number:'1.0-0' }}</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress__bar" [style.width.%]="totalExpenses() ? (expensesByCat()[cat.value] / totalExpenses()) * 100 : 0"></div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Budget progress -->
+        <div class="card">
+          <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Orçamento vs Despesas</h3></div>
+          <div class="card__body">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-size:0.85rem;color:var(--text-2);">Usado</span>
+              <span style="font-size:0.85rem;font-weight:700;">{{ trip()!.currency }} {{ totalExpenses() | number:'1.0-0' }} / {{ trip()!.budget | number:'1.0-0' }}</span>
+            </div>
+            <div class="progress" style="height:10px;">
+              <div class="progress__bar" [style.width.%]="trip()!.budget ? Math.min((totalExpenses() / trip()!.budget) * 100, 100) : 0"
+                [style.background]="(totalExpenses() / trip()!.budget) > 0.9 ? 'var(--danger)' : (totalExpenses() / trip()!.budget) > 0.7 ? 'var(--warning)' : 'var(--success)'">
+              </div>
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-2);margin-top:8px;text-align:right;">
+              Restam: {{ trip()!.currency }} {{ (trip()!.budget - totalExpenses()) | number:'1.0-0' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Map embed -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">
+              <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary);">map</span>
+              Localização
+            </h3>
+          </div>
+          <div class="card__body" style="padding:0;overflow:hidden;border-radius:0 0 16px 16px;">
+            <div class="map-embed" (click)="openMaps()">
+              <img [src]="'https://maps.googleapis.com/maps/api/staticmap?center=' + trip()!.lat + ',' + trip()!.lon + '&zoom=10&size=400x200&markers=color:red%7C' + trip()!.lat + ',' + trip()!.lon + '&key=AIzaSyD-DEMO'"
+                alt="Mapa"
+                onerror="this.style.display='none';this.parentElement.querySelector('.map-fallback').style.display='flex'">
+              <div class="map-fallback">
+                <span class="material-icons">map</span>
+                <p>{{ trip()!.destination }}, {{ trip()!.country }}</p>
+                <span style="font-size:0.75rem;">Clique para abrir no Google Maps</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expense modal -->
+    @if (showExpenseModal()) {
+      <div class="modal-backdrop" (click)="showExpenseModal.set(false)">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <div class="modal__header">
+            <h3 class="modal__title">Adicionar Despesa</h3>
+            <button class="modal__close" (click)="showExpenseModal.set(false)">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+          <div class="modal__body" style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-group">
+              <label>Descrição *</label>
+              <input class="form-control" type="text" placeholder="ex: Hotel, Restaurante..."
+                [value]="expenseForm().description" (input)="updateExpForm('description', $any($event.target).value)">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label>Valor *</label>
+                <input class="form-control" type="number" placeholder="0.00"
+                  [value]="expenseForm().amount" (input)="updateExpForm('amount', $any($event.target).value)">
+              </div>
+              <div class="form-group">
+                <label>Moeda</label>
+                <select class="form-control" [value]="expenseForm().currency" (change)="updateExpForm('currency', $any($event.target).value)">
+                  @for (c of ['USD','EUR','GBP','AOA','BRL']; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select class="form-control" [value]="expenseForm().category" (change)="updateExpForm('category', $any($event.target).value)">
+                @for (cat of categories; track cat.value) {
+                  <option [value]="cat.value">{{ cat.label }}</option>
+                }
+              </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label>Data</label>
+                <input class="form-control" type="date" [value]="expenseForm().date" (change)="updateExpForm('date', $any($event.target).value)">
+              </div>
+              <div class="form-group">
+                <label>Pago por</label>
+                <input class="form-control" type="text" placeholder="O seu nome" [value]="expenseForm().paidBy" (input)="updateExpForm('paidBy', $any($event.target).value)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Participantes (vírgula)</label>
+              <input class="form-control" type="text" placeholder="João, Ana, Pedro..." [value]="expenseForm().participants" (input)="updateExpForm('participants', $any($event.target).value)">
+            </div>
+          </div>
+          <div class="modal__footer">
+            <button class="btn btn--secondary" (click)="showExpenseModal.set(false)">Cancelar</button>
+            <button class="btn btn--primary" (click)="saveExpense()" [disabled]="savingExpense()">
+              @if (savingExpense()) { <span class="spinner spinner--sm"></span> }
+              Adicionar despesa
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <app-confirm-dialog
+      [show]="showConfirm()"
+      title="Eliminar viagem"
+      message="Tem a certeza que deseja eliminar esta viagem? Esta acção é irreversível e todos os dados serão perdidos."
+      confirmLabel="Eliminar viagem"
+      [loading]="deleting()"
+      (confirmed)="doDeleteTrip()"
+      (cancelled)="showConfirm.set(false)">
+    </app-confirm-dialog>
+  </div>
+}
