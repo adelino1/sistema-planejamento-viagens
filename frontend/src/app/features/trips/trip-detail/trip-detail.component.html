@@ -26,6 +26,14 @@
           <button class="btn btn--secondary btn--sm" (click)="openMaps()">
             <span class="material-icons">map</span> Ver no mapa
           </button>
+          <button class="btn btn--primary btn--sm" (click)="exportPDF()" [disabled]="exportingPdf()">
+            @if (exportingPdf()) {
+              <span class="spinner spinner--sm"></span>
+            } @else {
+              <span class="material-icons">picture_as_pdf</span>
+            }
+            {{ exportingPdf() ? 'A gerar...' : 'Exportar PDF' }}
+          </button>
           <button class="btn btn--danger btn--sm" (click)="confirmDeleteTrip()">
             <span class="material-icons">delete</span>
           </button>
