@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { TripService } from '../../../core/services/trip.service';
 import { WeatherService, WeatherData } from '../../../core/services/weather.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ShareService } from '../../../core/services/share.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Trip, Expense, EXPENSE_CATEGORIES, STATUS_LABELS } from '../../../core/models/trip.model';
 import jsPDF from 'jspdf';
@@ -19,11 +20,12 @@ import autoTable from 'jspdf-autotable';
 })
 export class TripDetailComponent implements OnInit {
   Math = Math;
-  route = inject(ActivatedRoute);
-  router = inject(Router);
-  tripService = inject(TripService);
+  route        = inject(ActivatedRoute);
+  router       = inject(Router);
+  tripService  = inject(TripService);
   weatherService = inject(WeatherService);
-  ns = inject(NotificationService);
+  shareService = inject(ShareService);
+  ns           = inject(NotificationService);
 
   trip = signal<Trip | null>(null);
   expenses = signal<Expense[]>([]);
@@ -36,6 +38,7 @@ export class TripDetailComponent implements OnInit {
   showConfirm = signal(false);
   deleting = signal(false);
   exportingPdf = signal(false);
+  sharing      = signal(false);
 
   expenseForm = signal({
     description: '', amount: 0, currency: 'USD',
@@ -158,6 +161,21 @@ export class TripDetailComponent implements OnInit {
     const t = this.trip();
     if (!t) return;
     window.open(`https://www.google.com/maps/search/${encodeURIComponent(t.destination + ', ' + t.country)}`, '_blank');
+  }
+
+  async shareTrip() {
+    const t = this.trip();
+    if (!t || this.sharing()) return;
+    this.sharing.set(true);
+    try {
+      const url = this.shareService.buildUrl(t, this.expenses());
+      await this.shareService.copyToClipboard(url);
+      this.ns.success('Link copiado!', 'Partilhe o link para que outros possam ver esta viagem.');
+    } catch {
+      this.ns.error('Erro', 'Não foi possível copiar o link.');
+    } finally {
+      this.sharing.set(false);
+    }
   }
 
   async exportPDF() {

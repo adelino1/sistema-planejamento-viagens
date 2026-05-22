@@ -1,0 +1,272 @@
+<!-- PUBLIC SHARED TRIP VIEW — no auth required -->
+
+<!-- Navbar -->
+<nav class="share-nav">
+  <a routerLink="/" class="share-nav__brand">
+    <span class="material-icons">flight_takeoff</span>
+    TravelPlan
+  </a>
+  <div class="share-nav__right">
+    <button class="share-nav__theme" (click)="toggleTheme()" [title]="isDark() ? 'Modo claro' : 'Modo escuro'">
+      <span class="material-icons">{{ isDark() ? 'light_mode' : 'dark_mode' }}</span>
+    </button>
+    <a routerLink="/login" class="btn btn--secondary btn--sm">Entrar</a>
+    <a routerLink="/register" class="btn btn--primary btn--sm">
+      <span class="material-icons">add</span> Criar conta
+    </a>
+  </div>
+</nav>
+
+<!-- Invalid link -->
+@if (invalid()) {
+  <div class="share-error">
+    <span class="material-icons share-error__icon">link_off</span>
+    <h2>Link inválido ou expirado</h2>
+    <p>Este link de partilha não é válido ou já não está disponível.</p>
+    <a routerLink="/" class="btn btn--primary">Ir para o início</a>
+  </div>
+}
+
+@if (payload()) {
+  <div class="share-page fade-in">
+
+    <!-- Hero -->
+    <div class="share-hero">
+      <img [src]="payload()!.trip.coverImage" [alt]="payload()!.trip.destination" class="share-hero__img">
+      <div class="share-hero__overlay"></div>
+      <div class="share-hero__content">
+        <div class="share-hero__badge">
+          <span class="material-icons">share</span>
+          Viagem partilhada em {{ formatShared(payload()!.sharedAt) }}
+        </div>
+        <div class="share-hero__flag">{{ payload()!.trip.flag }}</div>
+        <h1 class="share-hero__title">{{ payload()!.trip.destination }}</h1>
+        <p class="share-hero__country">{{ payload()!.trip.country }}</p>
+        <span class="badge {{ statusLabels[payload()!.trip.status].badge }}">
+          {{ statusLabels[payload()!.trip.status].label }}
+        </span>
+        <div class="share-hero__actions">
+          <button class="btn btn--primary btn--sm" (click)="downloadPDF()" [disabled]="exportingPdf()">
+            @if (exportingPdf()) {
+              <span class="spinner spinner--sm"></span>
+            } @else {
+              <span class="material-icons">download</span>
+            }
+            {{ exportingPdf() ? 'A gerar...' : 'Descarregar PDF' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="share-body">
+      <!-- Left column -->
+      <div class="share-left">
+
+        <!-- Stats -->
+        <div class="share-stats">
+          <div class="share-stat">
+            <span class="material-icons share-stat__icon" style="color:var(--primary)">calendar_today</span>
+            <div>
+              <div class="share-stat__val">{{ getDays() }} dias</div>
+              <div class="share-stat__lbl">Duração</div>
+            </div>
+          </div>
+          <div class="share-stat">
+            <span class="material-icons share-stat__icon" style="color:var(--success)">payments</span>
+            <div>
+              <div class="share-stat__val">{{ payload()!.trip.currency }} {{ payload()!.trip.budget | number:'1.0-0' }}</div>
+              <div class="share-stat__lbl">Orçamento</div>
+            </div>
+          </div>
+          <div class="share-stat">
+            <span class="material-icons share-stat__icon" style="color:var(--secondary)">people</span>
+            <div>
+              <div class="share-stat__val">{{ payload()!.trip.participants }}</div>
+              <div class="share-stat__lbl">Participantes</div>
+            </div>
+          </div>
+          <div class="share-stat">
+            <span class="material-icons share-stat__icon" style="color:var(--warning)">receipt_long</span>
+            <div>
+              <div class="share-stat__val">{{ payload()!.trip.currency }} {{ totalExpenses() | number:'1.0-0' }}</div>
+              <div class="share-stat__lbl">Despesas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">
+              <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary)">calendar_month</span>
+              Datas da Viagem
+            </h3>
+          </div>
+          <div class="card__body" style="display:flex;gap:24px;flex-wrap:wrap;align-items:center;">
+            <div class="date-block">
+              <div class="date-block__label">Partida</div>
+              <div class="date-block__date">{{ formatDate(payload()!.trip.startDate) }}</div>
+            </div>
+            <span class="material-icons" style="color:var(--text-3)">east</span>
+            <div class="date-block">
+              <div class="date-block__label">Regresso</div>
+              <div class="date-block__date">{{ formatDate(payload()!.trip.endDate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        @if (payload()!.trip.description) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">
+                <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary)">description</span>
+                Descrição
+              </h3>
+            </div>
+            <div class="card__body">
+              <p style="color:var(--text-2);line-height:1.75;font-size:0.9rem;">{{ payload()!.trip.description }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Activities -->
+        @if (payload()!.trip.activities.length > 0) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">
+                <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary)">attractions</span>
+                Actividades Planeadas
+              </h3>
+            </div>
+            <div class="card__body">
+              <div class="activities-list">
+                @for (act of payload()!.trip.activities; track act) {
+                  <div class="activity-item">
+                    <span class="material-icons">check_circle</span>{{ act }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Expenses -->
+        <div class="card">
+          <div class="card__header">
+            <h3 style="font-size:1rem;font-weight:700;">
+              <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:6px;color:var(--primary)">receipt_long</span>
+              Despesas ({{ payload()!.expenses.length }})
+            </h3>
+          </div>
+          <div class="card__body" style="padding:0;">
+            @if (payload()!.expenses.length === 0) {
+              <div style="padding:32px;text-align:center;color:var(--text-2);">
+                <span style="font-size:2.5rem;">💳</span>
+                <p style="margin-top:10px;font-size:0.875rem;">Nenhuma despesa registada.</p>
+              </div>
+            }
+            @for (exp of payload()!.expenses; track exp.id) {
+              <div class="expense-row">
+                <div class="expense-row__cat">
+                  <span class="material-icons">{{ getCategoryIcon(exp.category) }}</span>
+                </div>
+                <div class="expense-row__info">
+                  <div class="expense-row__desc">{{ exp.description }}</div>
+                  <div class="expense-row__meta">
+                    {{ getCategoryLabel(exp.category) }} · {{ exp.paidBy }} · {{ exp.date | date:'dd/MM/yyyy' }}
+                  </div>
+                </div>
+                <div class="expense-row__amount">{{ exp.currency }} {{ exp.amount | number:'1.2-2' }}</div>
+              </div>
+            }
+            @if (payload()!.expenses.length > 0) {
+              <div class="expense-total">
+                <span>Total</span>
+                <strong>{{ payload()!.trip.currency }} {{ totalExpenses() | number:'1.2-2' }}</strong>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="share-right">
+
+        <!-- Budget progress -->
+        <div class="card">
+          <div class="card__header"><h3 style="font-size:1rem;font-weight:700;">Orçamento vs Despesas</h3></div>
+          <div class="card__body">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-size:0.85rem;color:var(--text-2);">Usado</span>
+              <span style="font-size:0.85rem;font-weight:700;">
+                {{ payload()!.trip.currency }} {{ totalExpenses() | number:'1.0-0' }} / {{ payload()!.trip.budget | number:'1.0-0' }}
+              </span>
+            </div>
+            <div class="progress" style="height:10px;">
+              <div class="progress__bar"
+                [style.width.%]="payload()!.trip.budget ? Math.min((totalExpenses() / payload()!.trip.budget) * 100, 100) : 0"
+                [style.background]="(totalExpenses() / payload()!.trip.budget) > 0.9 ? 'var(--danger)' : (totalExpenses() / payload()!.trip.budget) > 0.7 ? 'var(--warning)' : 'var(--success)'">
+              </div>
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-2);margin-top:8px;text-align:right;">
+              Restam: {{ payload()!.trip.currency }} {{ (payload()!.trip.budget - totalExpenses()) | number:'1.0-0' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Expenses by category -->
+        @if (payload()!.expenses.length > 0) {
+          <div class="card">
+            <div class="card__header">
+              <h3 style="font-size:1rem;font-weight:700;">Despesas por Categoria</h3>
+            </div>
+            <div class="card__body" style="display:flex;flex-direction:column;gap:12px;">
+              @for (cat of categories; track cat.value) {
+                @if (expensesByCat()[cat.value]) {
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                      <span style="font-size:0.8rem;color:var(--text-2);display:flex;align-items:center;gap:6px;">
+                        <span class="material-icons" style="font-size:14px;">{{ cat.icon }}</span>{{ cat.label }}
+                      </span>
+                      <span style="font-size:0.8rem;font-weight:700;">
+                        {{ payload()!.trip.currency }} {{ expensesByCat()[cat.value] | number:'1.0-0' }}
+                      </span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress__bar"
+                        [style.width.%]="totalExpenses() ? (expensesByCat()[cat.value] / totalExpenses()) * 100 : 0">
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+
+        <!-- CTA card -->
+        <div class="share-cta">
+          <div class="share-cta__icon">✈️</div>
+          <h3 class="share-cta__title">Planeie a sua viagem</h3>
+          <p class="share-cta__desc">
+            Crie uma conta gratuita no TravelPlan e comece a planear as suas próprias aventuras com controlo de orçamento, clima em tempo real e muito mais.
+          </p>
+          <a routerLink="/register" class="btn btn--primary" style="width:100%;justify-content:center;">
+            <span class="material-icons">rocket_launch</span>
+            Começar gratuitamente
+          </a>
+          <a routerLink="/login" class="btn btn--secondary" style="width:100%;justify-content:center;margin-top:8px;">
+            Já tenho conta
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="share-footer">
+      <span class="material-icons">flight_takeoff</span>
+      <span>TravelPlan · Sistema de Planejamento de Viagens</span>
+    </footer>
+  </div>
+}

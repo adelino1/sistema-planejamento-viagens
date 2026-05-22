@@ -43,5 +43,9 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: 'share/:token',
+    loadComponent: () => import('./features/shared-trip/shared-trip.component').then(m => m.SharedTripComponent)
+  },
   { path: '**', redirectTo: '' }
 ];

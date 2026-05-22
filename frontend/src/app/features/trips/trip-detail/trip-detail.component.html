@@ -26,6 +26,14 @@
           <button class="btn btn--secondary btn--sm" (click)="openMaps()">
             <span class="material-icons">map</span> Ver no mapa
           </button>
+          <button class="btn btn--secondary btn--sm" (click)="shareTrip()" [disabled]="sharing()">
+            @if (sharing()) {
+              <span class="spinner spinner--sm"></span>
+            } @else {
+              <span class="material-icons">share</span>
+            }
+            {{ sharing() ? 'A copiar...' : 'Partilhar' }}
+          </button>
           <button class="btn btn--primary btn--sm" (click)="exportPDF()" [disabled]="exportingPdf()">
             @if (exportingPdf()) {
               <span class="spinner spinner--sm"></span>
