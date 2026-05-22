@@ -49,20 +49,29 @@
 }
 
 [data-theme="dark"] {
-  --bg: #0D1117;
-  --surface: #161B22;
-  --surface-2: #1C2128;
-  --text: #E6EDF3;
-  --text-2: #8B949E;
-  --text-3: #484F58;
-  --border: #30363D;
-  --border-2: #3D444D;
-  --sidebar-bg: #010409;
+  --bg: #050505;
+  --surface: #111111;
+  --surface-2: #1A1A1A;
+  --text: #F3F4F6;
+  --text-2: #9CA3AF;
+  --text-3: #6B7280;
+  --border: #262626;
+  --border-2: #404040;
+  --sidebar-bg: #0A0A0A;
   --primary-light: rgba(37,99,235,0.15);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.4);
-  --shadow-xl: 0 20px 25px rgba(0,0,0,0.5);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.6);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.7);
+  --glass-bg: rgba(17, 17, 17, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+.glass {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.7));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.3));
 }
 
 *,*::before,*::after { box-sizing: border-box; margin:0; padding:0; }
@@ -318,8 +327,9 @@ select.form-control { cursor: pointer; appearance: none;
 
 /* ── Animations ── */
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-@keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
+@keyframes scaleUp { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 @keyframes bounceIn {
@@ -327,8 +337,9 @@ select.form-control { cursor: pointer; appearance: none;
   60% { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; } }
 
-.fade-in { animation: fadeIn 0.3s ease; }
-.slide-up { animation: slideUp 0.3s ease; }
+.fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.scale-up { animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 /* ── Grid ── */
 .grid { display: grid; gap: 20px;

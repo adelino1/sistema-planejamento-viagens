@@ -1,43 +1,97 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { LanguageService } from '../../core/services/language.service';
+import { ExploreBuilderComponent } from '../../features/explore/explore-builder/explore-builder.component';
+import { environment } from '../../../environments/environment';
 
-const DESTINATIONS = [
-  { name: 'Paris', country: 'França', img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&auto=format&fit=crop', price: 'desde €1.200' },
-  { name: 'Bali', country: 'Indonésia', img: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=600&auto=format&fit=crop', price: 'desde $1.800' },
-  { name: 'Nova Iorque', country: 'EUA', img: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&auto=format&fit=crop', price: 'desde $2.000' },
-  { name: 'Tóquio', country: 'Japão', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&auto=format&fit=crop', price: 'desde $3.500' },
-  { name: 'Santorini', country: 'Grécia', img: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&auto=format&fit=crop', price: 'desde €1.500' },
-  { name: 'Maldivas', country: 'Maldivas', img: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&auto=format&fit=crop', price: 'desde $4.000' }
-];
-
-const FEATURES = [
-  { icon: 'route', title: 'Planeie com Facilidade', desc: 'Crie roteiros completos com datas, destinos e actividades em minutos.' },
-  { icon: 'cloud', title: 'Clima em Tempo Real', desc: 'Consulte o clima actual de qualquer destino através da API Open-Meteo.' },
-  { icon: 'receipt_long', title: 'Controlo de Despesas', desc: 'Acompanhe todas as despesas da viagem e mantenha-se dentro do orçamento.' },
-  { icon: 'group', title: 'Viagens em Grupo', desc: 'Organize viagens com múltiplos participantes e divida as despesas.' },
-  { icon: 'dark_mode', title: 'Modo Escuro / Claro', desc: 'Interface elegante com suporte total a modo escuro para maior conforto.' },
-  { icon: 'devices', title: 'Totalmente Responsivo', desc: 'Acesse o sistema em qualquer dispositivo — móvel, tablet ou desktop.' }
-];
+export interface Destination {
+  id: number;
+  name: string;
+  country: string;
+  continent: string;
+  img: string;
+  price: number;
+  description: string;
+  language: string;
+  currency: string;
+  bestTime: string;
+  tips: string;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ExploreBuilderComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private http = inject(HttpClient);
   auth = inject(AuthService);
   themeService = inject(ThemeService);
+  currencyService = inject(CurrencyService);
+  langService = inject(LanguageService);
 
   isAuthenticated = computed(() => this.auth.isAuthenticated());
   isDark = computed(() => this.themeService.isDark());
+  currentCurrency = computed(() => this.currencyService.getCurrency());
+  currentLang = computed(() => this.langService.currentLang());
 
-  destinations = DESTINATIONS;
-  features = FEATURES;
+  // Continents: 1=Africa, 2=Europe, 3=Asia, 4=N. America, 5=S. America, 6=Oceania
+  africaDestinations = signal<Destination[]>([]);
+  europeDestinations = signal<Destination[]>([]);
+  asiaDestinations = signal<Destination[]>([]);
+  americasDestinations = signal<Destination[]>([]);
+  oceaniaDestinations = signal<Destination[]>([]);
+
+  features = [
+    { icon: 'route', title: 'Roteiros Automáticos', desc: 'Gerados instantaneamente com base nas suas preferências.' },
+    { icon: 'cloud', title: 'Clima em Tempo Real', desc: 'Previsões meteorológicas para qualquer destino.' },
+    { icon: 'currency_exchange', title: 'Câmbio Dinâmico', desc: 'Conversão automática de moedas.' },
+    { icon: 'translate', title: 'Multilíngue', desc: 'Disponível em mais de 10 idiomas diferentes.' }
+  ];
+  
+  selectedDestination: Destination | null = null;
+  searchQuery = signal('');
+
+  ngOnInit() {
+    this.loadDestinations(1, this.africaDestinations);
+    this.loadDestinations(2, this.europeDestinations);
+    this.loadDestinations(3, this.asiaDestinations);
+    this.loadDestinations(4, this.americasDestinations);
+    this.loadDestinations(6, this.oceaniaDestinations);
+  }
+
+  loadDestinations(continentId: number, targetSignal: any) {
+    this.http.get<{status: string, data: Destination[]}>(`${environment.apiUrl}/destinations.php?continent=${continentId}`)
+      .subscribe({
+        next: (res) => {
+          if (res.status === 'success') targetSignal.set(res.data);
+        },
+        error: (err) => console.error('Failed to load continent', continentId, err)
+      });
+  }
 
   toggleTheme() { this.themeService.toggle(); }
+
+  setCurrency(code: string) { this.currencyService.setCurrency(code); }
+  
+  setLanguage(code: string) { this.langService.setLanguage(code); }
+
+  openExplore(dest: Destination) {
+    this.selectedDestination = dest;
+  }
+
+  formatPrice(price: number): string {
+    return this.currencyService.format(price);
+  }
+
+  get availableLanguages() {
+    return this.langService.supportedLanguages;
+  }
 }

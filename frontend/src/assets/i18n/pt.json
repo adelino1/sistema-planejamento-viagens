@@ -1,0 +1,27 @@
+{
+  "NAV": {
+    "DASHBOARD": "Painel",
+    "TRIPS": "Viagens",
+    "PROFILE": "Perfil",
+    "LOGOUT": "Sair"
+  },
+  "DASHBOARD": {
+    "TITLE": "Bem-vindo de volta",
+    "SUBTITLE": "Planeje sua próxima aventura",
+    "NEW_TRIP": "Nova Viagem",
+    "RECENT_TRIPS": "Viagens Recentes"
+  },
+  "TRIP": {
+    "EXPORT_PDF": "Exportar Roteiro (PDF)",
+    "EXPORT_CSV": "Exportar Despesas (CSV)",
+    "NO_TRIPS": "Nenhuma viagem encontrada."
+  },
+  "COMMON": {
+    "SAVE": "Salvar",
+    "CANCEL": "Cancelar",
+    "DELETE": "Apagar",
+    "LANGUAGE": "Idioma",
+    "DARK_MODE": "Modo Escuro",
+    "LIGHT_MODE": "Modo Claro"
+  }
+}

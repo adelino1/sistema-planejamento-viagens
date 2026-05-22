@@ -5,11 +5,14 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { MapComponent } from '../../components/map/map.component';
 import { ExpenseListComponent } from '../../components/expense-list/expense-list.component';
 import { TripService, Trip } from '../../services/trip.service';
+import { TranslateModule } from '@ngx-translate/core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-trip-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent, MapComponent, ExpenseListComponent],
+  imports: [CommonModule, RouterModule, HeaderComponent, MapComponent, ExpenseListComponent, TranslateModule],
   templateUrl: './trip-details.component.html',
   styleUrl: './trip-details.component.scss'
 })
@@ -65,5 +68,46 @@ export class TripDetailsComponent implements OnInit {
         };
       }
     });
+  }
+
+  exportPDF() {
+    if (!this.trip) return;
+    const doc = new jsPDF();
+    doc.text(`Roteiro da Viagem: ${this.trip.title}`, 14, 20);
+    doc.text(`Destino: ${this.trip.destination}`, 14, 30);
+    doc.text(`Período: ${this.trip.start_date} a ${this.trip.end_date}`, 14, 40);
+    
+    autoTable(doc, {
+      startY: 50,
+      head: [['Dia', 'Atividades', 'Notas']],
+      body: [
+        ['Dia 1', 'Chegada e Check-in no hotel', 'Confirmar transfer'],
+        ['Dia 2', 'City Tour', 'Reservar com antecedência']
+      ],
+    });
+
+    doc.save(`roteiro_${this.trip.id}.pdf`);
+  }
+
+  exportCSV() {
+    if (!this.trip) return;
+    const headers = ['Categoria', 'Descricao', 'Valor (AOA)', 'Data'];
+    // Mock de despesas
+    const expenses = [
+      ['Alojamento', 'Hotel Epic Sana', '150000', '2026-12-15'],
+      ['Alimentação', 'Restaurante Ilha', '25000', '2026-12-16']
+    ];
+    
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n"
+      + expenses.map(e => e.join(",")).join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `despesas_${this.trip.id}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }

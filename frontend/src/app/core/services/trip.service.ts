@@ -1,5 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { Trip, TripFormData, TripStatus, Expense } from '../models/trip.model';
+import { StorageService } from './storage.service';
+import { AuthService } from './auth.service';
 
 const DEMO_TRIPS: Trip[] = [
   {
@@ -95,14 +99,46 @@ const DEMO_EXPENSES: Expense[] = [
 
 @Injectable({ providedIn: 'root' })
 export class TripService {
+  private storage = inject(StorageService);
+  private auth = inject(AuthService);
   private trips = signal<Trip[]>([]);
   private expenses = signal<Expense[]>([]);
+
+  private http = inject(HttpClient);
 
   constructor() {
     this.loadData();
   }
 
-  private loadData() {
+  private async loadData() {
+    if (this.auth.isAuthenticated()) {
+      try {
+        const token = this.auth.getToken();
+        const res = await firstValueFrom(
+          this.http.get<any>('http://localhost/sistema-planejamento-viagens/backend/api/itinerary/list.php', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        );
+        if (res && res.trips) {
+          // Merge with DEMO trips for UI purposes (so the user sees nice demo trips if they have none)
+          if (res.trips.length > 0) {
+             this.trips.set([...res.trips, ...DEMO_TRIPS]);
+          } else {
+             this.trips.set(DEMO_TRIPS);
+          }
+        } else {
+          this.trips.set(DEMO_TRIPS);
+        }
+      } catch (err) {
+        console.error('Failed to load trips from API', err);
+        this.fallbackLoad();
+      }
+    } else {
+      this.fallbackLoad();
+    }
+  }
+
+  private fallbackLoad() {
     try {
       const stored = localStorage.getItem('tp_trips');
       const trips = stored ? JSON.parse(stored) : DEMO_TRIPS;
@@ -155,15 +191,24 @@ export class TripService {
     return { total, planned, ongoing, completed, cancelled, totalBudget, favorites };
   }
 
-  create(data: TripFormData, userId: number): Promise<Trip> {
+  create(data: TripFormData, userId: number | null = null): Promise<Trip> {
     return new Promise(resolve => {
       setTimeout(() => {
         const trip: Trip = {
-          id: Date.now(), ...data, userId, isFavorite: false,
+          id: Date.now(), ...data, userId: userId || 0, isFavorite: false,
           createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
         };
-        this.trips.update(t => [...t, trip]);
-        this.save();
+
+        if (this.auth.isAuthenticated()) {
+          // Lógica de utilizador logado: Adicionar à lista local e (idealmente) fazer POST p/ backend
+          this.trips.update(t => [...t, trip]);
+          this.save();
+        } else {
+          // Lógica Guest Mode: Guardar no LocalStorage via StorageService
+          this.storage.saveGuestTrip(trip);
+          // Adicionar à lista em memória apenas para a sessão atual
+          this.trips.update(t => [...t, trip]);
+        }
         resolve(trip);
       }, 600);
     });

@@ -1,129 +1,135 @@
 import { Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { GuestItineraryService } from './guest-itinerary.service';
+import { firstValueFrom } from 'rxjs';
 import { User, LoginPayload, RegisterPayload } from '../models/user.model';
 
-const DEMO_USERS: User[] = [
-  {
-    id: 1, name: 'Admin TravelPlan', email: 'admin@travelplan.ao',
-    role: 'admin', createdAt: '2024-01-01T00:00:00Z', isActive: true,
-    phone: '+244 923 456 789', country: 'Angola', bio: 'Administrador do sistema.',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&crop=face',
-    preferences: { theme: 'light', language: 'pt', currency: 'AOA', notifications: true }
-  },
-  {
-    id: 2, name: 'João Silva', email: 'joao@email.com',
-    role: 'client', createdAt: '2024-03-15T00:00:00Z', isActive: true,
-    phone: '+244 912 345 678', country: 'Angola', bio: 'Apaixonado por viagens e cultura.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&crop=face',
-    preferences: { theme: 'light', language: 'pt', currency: 'USD', notifications: true }
-  },
-  {
-    id: 3, name: 'Ana Pereira', email: 'ana@email.com',
-    role: 'client', createdAt: '2024-05-20T00:00:00Z', isActive: true,
-    phone: '+244 934 567 890', country: 'Angola', bio: 'Viajante e fotógrafa.',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&crop=face',
-    preferences: { theme: 'dark', language: 'en', currency: 'EUR', notifications: false }
-  }
-];
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  currentUser = signal<User | null>(null);
-  isAuthenticated = signal(false);
+  private readonly API_URL = 'http://localhost/sistema-planejamento-viagens/backend/api';
+  
+  public currentUser = signal<User | null>(this.loadUser());
+  public isAuthenticated = signal<boolean>(!!this.loadUser());
 
-  constructor(private router: Router) {
-    this.loadFromStorage();
-  }
+  // Dummy data for users, to support admin panel
+  private dummyUsers: User[] = [
+    { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin', isActive: true, createdAt: new Date().toISOString() },
+    { id: 2, name: 'Normal User', email: 'user@example.com', role: 'client', isActive: true, createdAt: new Date().toISOString() }
+  ];
 
-  private loadFromStorage() {
-    try {
-      const stored = localStorage.getItem('tp_user');
-      if (stored) {
-        const user = JSON.parse(stored) as User;
-        this.currentUser.set(user);
-        this.isAuthenticated.set(true);
+  constructor(
+    private http: HttpClient,
+    private guestItinerary: GuestItineraryService
+  ) {}
+
+  private loadUser(): User | null {
+    const userStr = localStorage.getItem('tripnomad_user');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch {
+        return null;
       }
-    } catch { /* ignore */ }
+    }
+    return null;
   }
 
-  login(payload: LoginPayload): Promise<User> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const user = DEMO_USERS.find(
-          u => u.email === payload.email && u.isActive
-        );
-        if (user && (payload.password === 'password' || payload.password.length >= 6)) {
-          this.setUser(user);
-          resolve(user);
-        } else {
-          reject(new Error('Email ou senha incorretos. Use: admin@travelplan.ao / password'));
-        }
-      }, 800);
-    });
+  private setSession(user: User, token: string) {
+    // Add missing mock properties so UI doesn't crash
+    if (!user.role) user.role = user.email.includes('admin') ? 'admin' : 'client';
+    if (!user.avatar) user.avatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name);
+    if (!user.createdAt) user.createdAt = new Date().toISOString();
+    if (user.isActive === undefined) user.isActive = true;
+
+    localStorage.setItem('tripnomad_user', JSON.stringify(user));
+    localStorage.setItem('tripnomad_token', token);
+    this.currentUser.set(user);
+    this.isAuthenticated.set(true);
   }
 
-  register(payload: RegisterPayload): Promise<User> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (payload.password !== payload.confirmPassword) {
-          reject(new Error('As senhas não coincidem'));
-          return;
-        }
-        const existing = DEMO_USERS.find(u => u.email === payload.email);
-        if (existing) {
-          reject(new Error('Este email já está registado'));
-          return;
-        }
-        const newUser: User = {
-          id: Date.now(),
-          name: payload.name,
-          email: payload.email,
-          role: 'client',
-          createdAt: new Date().toISOString(),
-          isActive: true,
-          preferences: { theme: 'light', language: 'pt', currency: 'AOA', notifications: true }
-        };
-        DEMO_USERS.push(newUser);
-        this.setUser(newUser);
-        resolve(newUser);
-      }, 900);
-    });
+  public getToken(): string | null {
+    return localStorage.getItem('tripnomad_token');
   }
 
-  logout() {
+  async login(credentials: LoginPayload): Promise<boolean> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>(`${this.API_URL}/auth/login.php`, credentials)
+      );
+      
+      this.setSession(response.user, response.token);
+      await this.syncGuestDraft();
+      return true;
+    } catch (error) {
+      console.error('Login failed', error);
+      return false;
+    }
+  }
+
+  async register(credentials: RegisterPayload): Promise<boolean> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>(`${this.API_URL}/auth/register.php`, credentials)
+      );
+      
+      this.setSession(response.user, response.token);
+      await this.syncGuestDraft();
+      return true;
+    } catch (error) {
+      console.error('Registration failed', error);
+      return false;
+    }
+  }
+
+  public logout() {
+    localStorage.removeItem('tripnomad_user');
+    localStorage.removeItem('tripnomad_token');
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
-    localStorage.removeItem('tp_user');
-    localStorage.removeItem('tp_token');
-    this.router.navigate(['/login']);
   }
 
-  updateProfile(updates: Partial<User>): Promise<User> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const updated = { ...this.currentUser()!, ...updates };
-        this.setUser(updated);
-        resolve(updated);
-      }, 600);
-    });
-  }
-
-  isAdmin(): boolean {
+  public isAdmin(): boolean {
     return this.currentUser()?.role === 'admin';
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('tp_token');
+  public getAllUsers(): User[] {
+    // Ideally this would fetch from backend, but mock it for now since the components expect it synchronously
+    return this.dummyUsers;
   }
 
-  getAllUsers(): User[] {
-    return DEMO_USERS;
+  public async updateProfile(data: Partial<User>): Promise<boolean> {
+    const current = this.currentUser();
+    if (current) {
+      const updated = { ...current, ...data };
+      this.setSession(updated, this.getToken() || '');
+      return true;
+    }
+    return false;
   }
 
-  private setUser(user: User) {
-    this.currentUser.set(user);
-    this.isAuthenticated.set(true);
-    localStorage.setItem('tp_user', JSON.stringify(user));
-    localStorage.setItem('tp_token', `demo.token.${user.id}.${Date.now()}`);
+  // Critical Logic: Syncing Guest Draft to Cloud
+  private async syncGuestDraft() {
+    const draft = this.guestItinerary.getDraftData();
+    const token = this.getToken();
+    
+    if (draft && draft.days.length > 0 && token) {
+      try {
+        console.log('Syncing guest draft to cloud...', draft);
+        await firstValueFrom(
+          this.http.post<any>(`${this.API_URL}/itinerary/sync.php`, draft, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+        );
+        // Clean up guest mode after successful sync
+        this.guestItinerary.clearDraft();
+        console.log('Draft synced and cleared.');
+      } catch (error) {
+        console.error('Failed to sync guest draft', error);
+      }
+    }
   }
 }

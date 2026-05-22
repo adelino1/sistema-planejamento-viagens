@@ -16,6 +16,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
   },
   {
+    path: 'destinations/:id',
+    loadComponent: () => import('./pages/destination-details/destination-details.component').then(m => m.DestinationDetailsComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     canActivate: [authGuard],

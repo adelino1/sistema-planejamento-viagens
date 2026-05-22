@@ -1,0 +1,27 @@
+{
+  "NAV": {
+    "DASHBOARD": "Dashboard",
+    "TRIPS": "Trips",
+    "PROFILE": "Profile",
+    "LOGOUT": "Logout"
+  },
+  "DASHBOARD": {
+    "TITLE": "Welcome back",
+    "SUBTITLE": "Plan your next adventure",
+    "NEW_TRIP": "New Trip",
+    "RECENT_TRIPS": "Recent Trips"
+  },
+  "TRIP": {
+    "EXPORT_PDF": "Export Itinerary (PDF)",
+    "EXPORT_CSV": "Export Expenses (CSV)",
+    "NO_TRIPS": "No trips found."
+  },
+  "COMMON": {
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "LANGUAGE": "Language",
+    "DARK_MODE": "Dark Mode",
+    "LIGHT_MODE": "Light Mode"
+  }
+}

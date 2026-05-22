@@ -1,0 +1,67 @@
+<div class="flex h-screen bg-gray-50 text-gray-900 font-sans">
+  <!-- Sidebar -->
+  <aside class="w-96 bg-white shadow-xl flex flex-col z-10 relative">
+    <div class="p-6 border-b border-gray-100">
+      <h1 class="text-2xl font-bold tracking-tight text-blue-600 mb-2">TripNomad <span class="text-gray-900">AI</span></h1>
+      <p class="text-sm text-gray-500 mb-4">Descubra o seu próximo destino de forma inteligente.</p>
+      
+      <div class="relative">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Para onde quer ir?" 
+          class="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none" />
+      </div>
+    </div>
+
+    <!-- Sugestões Iniciais -->
+    <div class="p-6 overflow-y-auto flex-1" *ngIf="!tripState.hasDraft()">
+      <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Destinos Populares</h2>
+      <div class="space-y-3">
+        <div *ngFor="let dest of destinations" 
+             (click)="selectDestination(dest)"
+             class="group p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-md cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <h3 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{{ dest.name }}</h3>
+            <p class="text-xs text-gray-400 mt-1">Clique para iniciar roteiro</p>
+          </div>
+          <div class="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+            →
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rascunho Ativo (Guest Mode) -->
+    <div class="p-6 overflow-y-auto flex-1 bg-blue-50/30" *ngIf="tripState.hasDraft()">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Seu Rascunho</h2>
+        <button (click)="clearDraft()" class="text-xs text-red-500 hover:text-red-700 transition-colors font-medium">Recomeçar</button>
+      </div>
+      
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-blue-100 mb-4">
+        <h3 class="text-xl font-bold text-gray-900">{{ tripState.tripDraft()?.destination }}</h3>
+        <p class="text-sm text-gray-500 mt-1">Roteiro inteligente em construção...</p>
+      </div>
+
+      <!-- Espaço para adicionar atrações -->
+      <div class="p-4 border-2 border-dashed border-gray-200 rounded-xl text-center">
+        <p class="text-sm text-gray-500">Explore o mapa e clique nos locais para adicioná-los ao seu dia.</p>
+      </div>
+
+      <!-- Painel de Login Progressivo -->
+      <div *ngIf="!auth.isAuthenticated()" class="mt-6 p-5 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl text-white shadow-lg">
+        <h4 class="font-bold mb-2">Quer salvar este roteiro?</h4>
+        <p class="text-sm text-blue-100 mb-4">Crie uma conta grátis para não perder suas ideias e compartilhar com amigos.</p>
+        <button (click)="auth.openModal()" class="w-full py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors shadow-sm">
+          Salvar Viagem
+        </button>
+      </div>
+      <div *ngIf="auth.isAuthenticated()" class="mt-6 p-5 bg-green-50 border border-green-200 rounded-xl">
+        <p class="text-sm font-medium text-green-800">✅ Roteiro sincronizado na nuvem como {{ auth.currentUser()?.name }}</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mapa -->
+  <main class="flex-1 relative">
+    <div id="map" class="absolute inset-0 z-0"></div>
+  </main>
+</div>

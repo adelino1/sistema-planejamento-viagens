@@ -27,6 +27,9 @@
       <!-- Tab Roteiro -->
       <div *ngIf="activeTab === 'itinerary'" class="itinerary-tab split-layout">
         <div class="activities-list">
+          <div style="margin-bottom: 1rem;">
+            <button class="btn btn-secondary" (click)="exportPDF()">📄 {{ 'TRIP.EXPORT_PDF' | translate }}</button>
+          </div>
           <div class="day-card">
             <h3>Dia 1: Chegada em Luanda</h3>
             <p class="date">{{ trip.start_date | date:'dd MMM yyyy' }}</p>
@@ -54,6 +57,9 @@
 
       <!-- Tab Despesas -->
       <div *ngIf="activeTab === 'expenses'" class="expenses-tab">
+        <div style="margin-bottom: 1rem;">
+          <button class="btn btn-secondary" (click)="exportCSV()">📊 {{ 'TRIP.EXPORT_CSV' | translate }}</button>
+        </div>
         <app-expense-list [tripId]="trip.id!" [budgetAoa]="trip.budget_aoa"></app-expense-list>
       </div>
 

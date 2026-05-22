@@ -1,0 +1,132 @@
+<div class="destination-page">
+  <nav class="home-nav glass">
+    <div class="home-nav__brand">
+      <a routerLink="/" class="btn btn--icon"><span class="material-icons">arrow_back</span></a>
+      <span class="home-nav__name">TripNomad</span>
+    </div>
+  </nav>
+
+  @if (isLoading()) {
+    <div class="dest-loader"><div class="spinner spinner--lg"></div></div>
+  } @else if (destination()) {
+    
+    <!-- Hero Cinematográfico do Destino -->
+    <div class="dest-hero">
+      <img [src]="destination().cover_image" class="dest-hero__img" alt="Cover">
+      <div class="dest-hero__overlay"></div>
+      <div class="dest-hero__content slide-up">
+        <div class="badge badge--primary mb-4"><span class="material-icons">place</span> {{ destination().country }}</div>
+        <h1 class="dest-hero__title">{{ destination().name }}</h1>
+        <p class="dest-hero__desc">{{ destination().description }}</p>
+        
+        <div class="dest-hero__stats glass mt-6">
+          <div class="stat"><span class="material-icons">attach_money</span> {{ formatPrice(destination().average_cost) }} /dia</div>
+          <div class="stat"><span class="material-icons">language</span> {{ destination().local_language }}</div>
+          <div class="stat"><span class="material-icons">cloud</span> {{ destination().climate || 'Tropical' }}</div>
+          <button class="btn btn--primary btn--rounded" (click)="showPlanner.set(true)">
+            <span class="material-icons">auto_awesome</span> Planear Viagem
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Abas Interativas -->
+    <div class="dest-tabs-wrap">
+      <div class="dest-tabs">
+        <button class="tab-btn" [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
+          <span class="material-icons">info</span> Informações
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'visual'" (click)="activeTab.set('visual')">
+          <span class="material-icons">collections</span> Visual & Mapa
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'places'" (click)="activeTab.set('places')">
+          <span class="material-icons">hotel</span> Locais & Avaliações
+        </button>
+      </div>
+    </div>
+
+    <div class="dest-body">
+      <!-- Aba: Info -->
+      @if (activeTab() === 'info') {
+        <div class="fade-in grid grid--2">
+          <div class="info-card glass">
+            <h3><span class="material-icons text-primary">history_edu</span> História & Cultura</h3>
+            <p>{{ destination().history || 'Berço de civilizações antigas, com uma cultura rica e vibrante que perdura através dos séculos.' }}</p>
+          </div>
+          <div class="info-card glass">
+            <h3><span class="material-icons text-warning">wb_sunny</span> Melhor Época para Visitar</h3>
+            <p>{{ destination().best_time_to_visit || 'Visite entre os meses de Maio e Setembro para aproveitar o clima ameno.' }}</p>
+          </div>
+          <div class="info-card glass">
+            <h3><span class="material-icons text-danger">health_and_safety</span> Segurança e Dicas</h3>
+            <p>{{ destination().safety_tips || 'Destino geralmente seguro. Tenha cuidado com pertences em áreas com grandes aglomerações turísticas.' }}</p>
+          </div>
+          <div class="info-card glass">
+            <h3><span class="material-icons text-success">directions_transit</span> Transporte</h3>
+            <p>{{ destination().transport_tips || 'Recomenda-se o uso do sistema de metro local. Para turismo fora da cidade, aluguer de carro é a melhor opção.' }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Aba: Visual -->
+      @if (activeTab() === 'visual') {
+        <div class="fade-in">
+          <div class="map-container glass mb-6">
+             <app-map [customHeight]="'400px'" [interactive]="true"></app-map>
+          </div>
+          <div class="gallery grid grid--3">
+            <img [src]="destination().cover_image" class="gallery-img">
+            <img src="https://images.unsplash.com/photo-1522083115901-bc2f5e53ba2a?w=600" class="gallery-img">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600" class="gallery-img">
+          </div>
+        </div>
+      }
+
+      <!-- Aba: Places -->
+      @if (activeTab() === 'places') {
+        <div class="fade-in">
+          <h2 class="section-title mb-4">Hotéis Recomendados</h2>
+          <div class="places-grid">
+            @for (hotel of hotels(); track hotel.id) {
+              <div class="place-card glass">
+                <div class="place-card__img"><img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400"></div>
+                <div class="place-card__body">
+                  <h4>{{ hotel.name }}</h4>
+                  <div class="stars text-warning"><span class="material-icons">star</span> {{ hotel.stars }}</div>
+                  <p class="price">{{ formatPrice(hotel.price_per_night) }} /noite</p>
+                </div>
+              </div>
+            }
+            @if (hotels().length === 0) {
+              <p class="text-muted">Ainda não há hotéis registados para este destino.</p>
+            }
+          </div>
+
+          <h2 class="section-title mt-8 mb-4">Restaurantes Locais</h2>
+          <div class="places-grid">
+            @for (rest of restaurants(); track rest.id) {
+              <div class="place-card glass">
+                <div class="place-card__img"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400"></div>
+                <div class="place-card__body">
+                  <h4>{{ rest.name }}</h4>
+                  <p class="text-muted">{{ rest.cuisine_type }}</p>
+                </div>
+              </div>
+            }
+            @if (restaurants().length === 0) {
+              <p class="text-muted">Ainda não há restaurantes registados para este destino.</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Wizard de Planeamento Inteligente -->
+    @if (showPlanner()) {
+      <app-explore-builder [destination]="destination()" (close)="showPlanner.set(false)"></app-explore-builder>
+    }
+
+  } @else {
+    <div class="dest-loader"><p>Destino não encontrado.</p></div>
+  }
+</div>

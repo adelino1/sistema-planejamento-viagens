@@ -39,7 +39,8 @@ try {
             break;
 
         case 'users':
-            echo json_encode(['status' => 'info', 'message' => 'Endpoint de usuários em construção.']);
+        case 'auth':
+            require_once __DIR__ . '/auth.php';
             break;
 
         case 'trips':
